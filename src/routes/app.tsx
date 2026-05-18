@@ -214,17 +214,28 @@ function ModuleGrid() {
 
 function RecentTable() {
   const [rows, setRows] = useState<SavedReview[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     let alive = true;
-    listMyReviews(10).then((r) => {
-      if (alive) setRows(r);
-    });
+    setRows(null);
+    setError(null);
+    listMyReviews(10)
+      .then((r) => {
+        if (alive) setRows(r);
+      })
+      .catch((e: unknown) => {
+        if (!alive) return;
+        const msg = e instanceof Error ? e.message : "Unable to reach the ledger.";
+        setError(msg);
+        setRows([]);
+      });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloadKey]);
 
   const openReview = (r: SavedReview) => {
     if (typeof window === "undefined") return;
@@ -234,6 +245,8 @@ function RecentTable() {
     );
     navigate({ to: "/", hash: "audit-dossier" });
   };
+
+  const loading = rows === null && !error;
 
   return (
     <section>
@@ -256,11 +269,68 @@ function RecentTable() {
         </Link>
       </div>
 
-      {rows === null ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center text-sm text-muted-foreground">
-          Loading reviews…
+      {loading ? (
+        <div
+          className="overflow-hidden rounded-2xl border border-border"
+          aria-busy="true"
+          aria-live="polite"
+        >
+          <table className="w-full text-left text-sm">
+            <thead className="bg-secondary/30">
+              <tr className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted/80">
+                <Th>Review ID</Th>
+                <Th>Vendor</Th>
+                <Th>Decision</Th>
+                <Th className="text-right">Amount</Th>
+                <Th>Risk</Th>
+                <Th className="text-right">Actions</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <tr key={i} className={i > 0 ? "border-t border-border" : undefined}>
+                  <Td><SkeletonBar w="w-28" /></Td>
+                  <Td><SkeletonBar w="w-36" /></Td>
+                  <Td><SkeletonBar w="w-20" rounded="rounded-full" /></Td>
+                  <Td className="text-right">
+                    <div className="flex justify-end"><SkeletonBar w="w-20" /></div>
+                  </Td>
+                  <Td><SkeletonBar w="w-12" /></Td>
+                  <Td className="text-right">
+                    <div className="flex justify-end"><SkeletonBar w="w-10" /></div>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <span className="sr-only">Loading recent reviews</span>
         </div>
-      ) : rows.length === 0 ? (
+      ) : error ? (
+        <div
+          className="rounded-2xl border border-amber-restrained/30 bg-amber-restrained/5 p-10 text-center"
+          role="alert"
+        >
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-amber-restrained">
+            Ledger unreachable
+          </div>
+          <div className="mt-4 font-display text-2xl text-foreground">
+            Couldn't load your reviews
+          </div>
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+            The governance ledger didn't respond. This is usually a transient
+            connection issue — try again in a moment.
+          </p>
+          <p className="mx-auto mt-2 max-w-md font-mono text-[11px] text-ivory-muted/70">
+            {error}
+          </p>
+          <button
+            onClick={() => setReloadKey((k) => k + 1)}
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:border-ivory/40"
+          >
+            Try again
+          </button>
+        </div>
+      ) : rows!.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
           <div className="font-display text-2xl text-foreground">No reviews yet</div>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
@@ -289,7 +359,7 @@ function RecentTable() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
+              {rows!.map((r, i) => (
                 <tr
                   key={r.id}
                   className={i > 0 ? "border-t border-border" : undefined}
@@ -321,6 +391,16 @@ function RecentTable() {
       )}
     </section>
   );
+}
+
+function SkeletonBar({
+  w = "w-24",
+  rounded = "rounded",
+}: {
+  w?: string;
+  rounded?: string;
+}) {
+  return <div className={`h-3 ${w} ${rounded} bg-ivory/10 animate-pulse`} />;
 }
 
 function Th({
