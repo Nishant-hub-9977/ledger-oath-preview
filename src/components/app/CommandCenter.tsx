@@ -1,91 +1,33 @@
-import { useState } from "react";
+import {
+  DEMO_CASE,
+  NORTHLINE_VERDICT,
+  type CaseFields,
+  type ReviewState,
+} from "@/lib/decision/types";
 
-type ReviewState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | {
-      status: "done";
-      decision: string;
-      risk: string;
-      vendor: string;
-      amount: string;
-      approvers: string;
-    };
-
-type CaseFields = {
-  caseName: string;
-  reviewId: string;
-  vendor: string;
-  invoiceAmount: string;
-  status: string;
-  invoiceData: string;
-  vendorData: string;
-  policyModel: string;
-  costCenter: string;
-  routing: string;
-};
-
-const EMPTY: CaseFields = {
-  caseName: "",
-  reviewId: "",
-  vendor: "",
-  invoiceAmount: "",
-  status: "",
-  invoiceData: "",
-  vendorData: "",
-  policyModel: "",
-  costCenter: "",
-  routing: "",
-};
-
-const DEMO: CaseFields = {
-  caseName: "NORTHLINE_DEMO_CASE.json",
-  reviewId: "LO-2026-001",
-  vendor: "Northline Systems Pvt. Ltd.",
-  invoiceAmount: "₹8,42,500",
-  status: "Awaiting governance review",
-  invoiceData: `Invoice reference: NS-2026-044
-Amount: ₹8,42,500 INR
-Description: B2B software implementation services
-Payment terms: Requested 3 days earlier than Net 30
-Purchase order: Missing`,
-  vendorData: `Vendor: Northline Systems Pvt. Ltd.
-Status: Verified with warnings
-Risk signal: Bank account details changed within the last 14 days
-Prior payments: 6 invoices cleared over 18 months
-Tax registration: Active`,
-  policyModel: `Single-approver limit: ₹5,00,000
-Above threshold or recent vendor-bank change:
-  → Finance Controller AND Procurement Head required
-Early-payment requests outside Net 30 require justification
-Missing PO triggers compliance review`,
-  costCenter: "CC-IN-FIN-2204 / WBS: IMPL-NS-Q1",
-  routing: "Region: IN · Category: Software · Tier: Enterprise",
-};
-
-export function CommandCenter() {
-  const [fields, setFields] = useState<CaseFields>(EMPTY);
-  const [review, setReview] = useState<ReviewState>({ status: "idle" });
-
+export function CommandCenter({
+  fields,
+  setFields,
+  review,
+  setReview,
+}: {
+  fields: CaseFields;
+  setFields: React.Dispatch<React.SetStateAction<CaseFields>>;
+  review: ReviewState;
+  setReview: React.Dispatch<React.SetStateAction<ReviewState>>;
+}) {
   const update = <K extends keyof CaseFields>(key: K, value: CaseFields[K]) =>
     setFields((f) => ({ ...f, [key]: value }));
 
   const loadDemo = () => {
-    setFields(DEMO);
+    setFields(DEMO_CASE);
     setReview({ status: "idle" });
   };
 
   const runReview = () => {
     setReview({ status: "loading" });
     window.setTimeout(() => {
-      setReview({
-        status: "done",
-        decision: "ESCALATE",
-        risk: "72",
-        vendor: fields.vendor || "Northline Systems Pvt. Ltd.",
-        amount: fields.invoiceAmount || "₹8,42,500",
-        approvers: "Finance Controller + Procurement Head",
-      });
+      setReview({ status: "done", verdict: NORTHLINE_VERDICT });
     }, 1400);
   };
 
@@ -289,11 +231,12 @@ function ReviewPreview({
   const isDone = review.status === "done";
   const isLoading = review.status === "loading";
 
-  const decision = isDone ? review.decision : isLoading ? "…" : "Waiting";
-  const risk = isDone ? review.risk : "—";
-  const vendor = isDone ? review.vendor : fields.vendor || "—";
-  const amount = isDone ? review.amount : fields.invoiceAmount || "—";
-  const approvers = isDone ? review.approvers : "—";
+  const v = isDone ? review.verdict : null;
+  const decision = v ? v.decision : isLoading ? "…" : "Waiting";
+  const risk = v ? String(v.riskScore) : "—";
+  const vendor = v ? v.vendor.name : fields.vendor || "—";
+  const amount = v ? v.invoice.amount : fields.invoiceAmount || "—";
+  const approvers = v ? v.requiredApproversShort : "—";
 
   return (
     <div className="relative">

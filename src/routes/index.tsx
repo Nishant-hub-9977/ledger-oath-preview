@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CommandCenter } from "@/components/app/CommandCenter";
+import { DecisionRoom } from "@/components/app/DecisionRoom";
+import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,13 +42,22 @@ const trustItems = [
 ];
 
 function Landing() {
+  const [fields, setFields] = useState<CaseFields>(EMPTY_CASE);
+  const [review, setReview] = useState<ReviewState>({ status: "idle" });
+
   return (
     <div className="min-h-screen bg-background text-foreground grain">
       <Header />
       <main>
         <Hero />
         <TrustStrip />
-        <CommandCenter />
+        <CommandCenter
+          fields={fields}
+          setFields={setFields}
+          review={review}
+          setReview={setReview}
+        />
+        <DecisionRoom review={review} />
       </main>
       <Footer />
     </div>
@@ -62,7 +74,7 @@ function Header() {
         </a>
         <nav className="hidden items-center gap-10 text-sm text-muted-foreground md:flex">
           <a href="#product" className="transition-colors hover:text-foreground">Product</a>
-          <a href="#decision-room" className="transition-colors hover:text-foreground">Decision Room</a>
+          <a href="#decision-room-full" className="transition-colors hover:text-foreground">Decision Room</a>
           <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
         </nav>
         <a
