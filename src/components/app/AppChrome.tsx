@@ -110,15 +110,25 @@ export function SiteHeader({
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-xs text-ivory-muted/70 sm:flex-row sm:items-center sm:justify-between lg:px-10">
-        <div className="flex items-center gap-2.5">
+      <div className="mx-auto grid max-w-7xl gap-4 px-6 py-8 text-[11px] text-ivory-muted/70 sm:grid-cols-3 sm:items-center lg:px-10">
+        <div className="flex items-center gap-2.5 justify-self-start">
           <Mark />
           <span className="font-display text-base text-foreground">LedgerOath</span>
           <span className="ml-2">© {new Date().getFullYear()}</span>
         </div>
-        <div className="font-mono uppercase tracking-[0.2em]">
+        <div className="text-center font-mono uppercase tracking-[0.2em]">
           Built for enterprise finance · Simulated environment
         </div>
+        <a
+          href="#top"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="justify-self-end rounded-full border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+        >
+          Back to top ↑
+        </a>
       </div>
     </footer>
   );
