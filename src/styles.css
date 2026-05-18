@@ -192,6 +192,12 @@
   .light .painterly-dark { display: none; }
   .light .painterly-light { display: block; }
 
+  /* Isometric blueprint illustrations — black ink in light mode,
+     inverted to ivory ink in dark mode. */
+  .iso-lineart { opacity: 0.78; }
+  .light .iso-lineart { opacity: 0.62; }
+  :root:not(.light) .iso-lineart { filter: invert(1) brightness(1.05) contrast(1.05); opacity: 0.32; }
+
   /* App-wide celestial backdrop — drifts across the entire scroll. */
   .celestial-shell { position: relative; isolation: isolate; }
   .celestial-shell::before {
