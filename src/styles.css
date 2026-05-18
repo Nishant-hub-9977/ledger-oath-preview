@@ -58,6 +58,7 @@
   /* +10–15% contrast bump for secondary text in dark mode */
   --ivory-muted: oklch(0.86 0.015 85);
   --emerald-muted: oklch(0.66 0.085 165);
+  --celestial-teal: oklch(0.72 0.08 195);
   --amber-restrained: oklch(0.80 0.105 75);
   --danger-red: oklch(0.64 0.165 25);
   --hairline: oklch(1 0 0 / 12%);
