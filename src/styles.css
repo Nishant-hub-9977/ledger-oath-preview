@@ -197,6 +197,10 @@
   .iso-lineart { opacity: 0.78; }
   .light .iso-lineart { opacity: 0.62; }
   :root:not(.light) .iso-lineart { filter: invert(1) brightness(1.05) contrast(1.05); opacity: 0.32; }
+  /* Mobile-safe: force-hide isometric line art below xl (1280px) to prevent any text overlap */
+  @media (max-width: 1279.98px) {
+    .iso-lineart { display: none !important; }
+  }
 
   /* App-wide celestial backdrop — drifts across the entire scroll. */
   .celestial-shell { position: relative; isolation: isolate; }
