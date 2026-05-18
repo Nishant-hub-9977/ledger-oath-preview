@@ -313,17 +313,25 @@ function Dossier({ v }: { v: Verdict }) {
         <Tile className="lg:col-span-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <TileHeader eyebrow="Machine-readable" title="JSON record" tag="08" />
-            <div className="flex items-center gap-2">
-              <ActionButton onClick={() => setJsonOpen((o) => !o)} variant="ghost">
+            <div className="flex items-center gap-5">
+              <ActionButton onClick={() => setJsonOpen((o) => !o)}>
                 {jsonOpen ? "Hide JSON" : "Show JSON"}
               </ActionButton>
               <ActionButton onClick={() => copy(json, "JSON")}>Copy JSON</ActionButton>
             </div>
           </div>
           {jsonOpen ? (
-            <pre className="mt-6 max-h-[420px] overflow-auto rounded-xl border border-border bg-background/60 p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
-              {json}
-            </pre>
+            <div className="mt-6 overflow-hidden rounded-xl border border-border bg-background/60">
+              <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-4 py-2">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted">
+                  dossier.json · {v.reviewId}
+                </span>
+                <ActionButton onClick={() => copy(json, "JSON")}>Copy</ActionButton>
+              </div>
+              <pre className="max-h-[420px] overflow-auto p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
+                {json}
+              </pre>
+            </div>
           ) : (
             <p className="mt-6 text-sm text-muted-foreground">
               Structured dossier payload for downstream ERP, ledger, and audit
