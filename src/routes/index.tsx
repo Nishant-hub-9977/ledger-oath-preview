@@ -50,7 +50,7 @@ function Landing() {
   const [review, setReview] = useState<ReviewState>({ status: "idle" });
 
   return (
-    <div className="min-h-screen bg-background text-foreground grain">
+    <div id="top" className="min-h-screen bg-background text-foreground grain">
       <Header />
       <main>
         <Hero />
