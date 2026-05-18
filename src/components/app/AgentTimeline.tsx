@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState } from "@/lib/decision/types";
 
 const AGENTS: AgentEntry[] = [
