@@ -1,6 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { SiteFooter, SiteHeader } from "@/components/app/AppChrome";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { listMyReviews, type SavedReview } from "@/lib/decision/persist";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -13,32 +17,17 @@ export const Route = createFileRoute("/app")({
       },
     ],
   }),
+  beforeLoad: async ({ location }) => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      throw redirect({
+        to: "/login",
+        search: { redirect: location.href } as never,
+      });
+    }
+  },
   component: WorkspacePage,
 });
-
-const RECENT_REVIEWS = [
-  {
-    id: "LO-2026-001",
-    vendor: "Northline Systems Pvt. Ltd.",
-    amount: "₹8,42,500",
-    decision: "ESCALATE" as const,
-    risk: "HIGH",
-  },
-  {
-    id: "LO-2026-000",
-    vendor: "Meridian Cloud Ops",
-    amount: "₹1,24,000",
-    decision: "APPROVED" as const,
-    risk: "LOW",
-  },
-  {
-    id: "LO-2025-998",
-    vendor: "Kestrel Vendor Services",
-    amount: "₹4,90,000",
-    decision: "REVIEW" as const,
-    risk: "MEDIUM",
-  },
-];
 
 function WorkspacePage() {
   return (
@@ -57,13 +46,14 @@ function WorkspacePage() {
 }
 
 function WorkspaceBar() {
+  const { user } = useAuth();
   return (
     <div className="border-b border-border bg-secondary/20">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3 lg:px-10">
         <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ivory-muted/80">
-          <span className="text-foreground">Northline Review Workspace</span>
+          <span className="text-foreground">Review Workspace</span>
           <span className="text-ivory-muted/50">/</span>
-          <span>Demo Operator</span>
+          <span className="normal-case tracking-normal">{user?.email ?? "Operator"}</span>
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-amber-restrained">
           <span className="h-1 w-1 rounded-full bg-amber-restrained" />
@@ -97,7 +87,7 @@ function Hero() {
           hash="command-center"
           className="inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-navy-deep transition-colors hover:bg-ivory/90"
         >
-          Run Northline demo
+          New review
         </Link>
         <Link
           to="/"
@@ -223,6 +213,28 @@ function ModuleGrid() {
 }
 
 function RecentTable() {
+  const [rows, setRows] = useState<SavedReview[] | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let alive = true;
+    listMyReviews(10).then((r) => {
+      if (alive) setRows(r);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const openReview = (r: SavedReview) => {
+    if (typeof window === "undefined") return;
+    window.sessionStorage.setItem(
+      "lo:viewReview",
+      JSON.stringify({ dbId: r.id, result: r.result_json }),
+    );
+    navigate({ to: "/", hash: "audit-dossier" });
+  };
+
   return (
     <section>
       <div className="mb-6 flex items-end justify-between">
@@ -232,50 +244,81 @@ function RecentTable() {
             Recent reviews
           </div>
           <h2 className="mt-4 font-display text-3xl tracking-tight">
-            Last 3 governance decisions
+            Your latest governance decisions
           </h2>
         </div>
         <Link
           to="/"
-          hash="audit-dossier"
+          hash="command-center"
           className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted hover:text-foreground"
         >
-          Open dossier →
+          New review →
         </Link>
       </div>
-      <div className="overflow-hidden rounded-2xl border border-border">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-secondary/30">
-            <tr className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted/80">
-              <Th>Review ID</Th>
-              <Th>Vendor</Th>
-              <Th>Decision</Th>
-              <Th className="text-right">Amount</Th>
-              <Th>Risk</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {RECENT_REVIEWS.map((r, i) => (
-              <tr
-                key={r.id}
-                className={i > 0 ? "border-t border-border" : undefined}
-              >
-                <Td mono>{r.id}</Td>
-                <Td>{r.vendor}</Td>
-                <Td>
-                  <DecisionPill decision={r.decision} />
-                </Td>
-                <Td mono className="text-right">
-                  {r.amount}
-                </Td>
-                <Td>
-                  <RiskPill level={r.risk} />
-                </Td>
+
+      {rows === null ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card/30 p-10 text-center text-sm text-muted-foreground">
+          Loading reviews…
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card/30 p-12 text-center">
+          <div className="font-display text-2xl text-foreground">No reviews yet</div>
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+            Run the Northline demo or paste a real case in the command center to
+            create your first dossier.
+          </p>
+          <Link
+            to="/"
+            hash="command-center"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-navy-deep transition-colors hover:bg-ivory/90"
+          >
+            Open command center
+          </Link>
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-border">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-secondary/30">
+              <tr className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted/80">
+                <Th>Review ID</Th>
+                <Th>Vendor</Th>
+                <Th>Decision</Th>
+                <Th className="text-right">Amount</Th>
+                <Th>Risk</Th>
+                <Th className="text-right">Actions</Th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr
+                  key={r.id}
+                  className={i > 0 ? "border-t border-border" : undefined}
+                >
+                  <Td mono>{r.review_id}</Td>
+                  <Td>{r.vendor_name ?? "—"}</Td>
+                  <Td>
+                    <DecisionPill decision={r.decision ?? "REVIEW"} />
+                  </Td>
+                  <Td mono className="text-right">
+                    {r.invoice_amount_display ?? "—"}
+                  </Td>
+                  <Td>
+                    <RiskPill level={r.risk_level ?? "—"} />
+                  </Td>
+                  <Td className="text-right">
+                    <button
+                      onClick={() => openReview(r)}
+                      className="font-mono text-[10px] uppercase tracking-[0.18em] text-foreground hover:text-emerald-muted"
+                    >
+                      View →
+                    </button>
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }
@@ -310,15 +353,12 @@ function Td({
   );
 }
 
-function DecisionPill({
-  decision,
-}: {
-  decision: "ESCALATE" | "APPROVED" | "REVIEW";
-}) {
+function DecisionPill({ decision }: { decision: string }) {
+  const d = decision.toUpperCase();
   const styles =
-    decision === "ESCALATE"
+    d === "ESCALATE"
       ? "border-amber-restrained/40 bg-amber-restrained/10 text-amber-restrained"
-      : decision === "APPROVED"
+      : d === "APPROVE" || d === "APPROVED"
       ? "border-emerald-muted/40 bg-emerald-muted/10 text-emerald-muted"
       : "border-border bg-secondary/40 text-ivory-muted";
   return (
@@ -329,19 +369,17 @@ function DecisionPill({
         className="h-1 w-1 rounded-full"
         style={{ backgroundColor: "currentColor" }}
       />
-      {decision}
+      {d}
     </span>
   );
 }
 
 function RiskPill({ level }: { level: string }) {
   const styles =
-    level === "HIGH"
+    level === "HIGH" || level === "CRITICAL"
       ? "text-amber-restrained"
       : level === "LOW"
       ? "text-emerald-muted"
       : "text-ivory-muted";
-  return (
-    <span className={`font-mono text-[12px] ${styles}`}>{level}</span>
-  );
+  return <span className={`font-mono text-[12px] ${styles}`}>{level}</span>;
 }
