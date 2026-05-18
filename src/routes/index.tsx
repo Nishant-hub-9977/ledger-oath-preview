@@ -63,8 +63,10 @@ function Landing() {
         />
         <DecisionRoom review={review} />
         <AgentTimeline review={review} />
+        <AuditDossier review={review} />
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 }
