@@ -39,6 +39,19 @@ export function CommandCenter({
       className="relative overflow-hidden border-t border-border bg-secondary/10"
     >
       <CelestialBackdrop variant="chamber" intensity="subtle" />
+      <img
+        src={isoStack}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="iso-lineart pointer-events-none absolute right-0 top-8 hidden w-[520px] max-w-[44%] select-none lg:block xl:w-[600px]"
+        style={{
+          WebkitMaskImage:
+            "radial-gradient(ellipse 75% 80% at 65% 45%, #000 35%, transparent 80%)",
+          maskImage:
+            "radial-gradient(ellipse 75% 80% at 65% 45%, #000 35%, transparent 80%)",
+        }}
+      />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionHeader />
 
