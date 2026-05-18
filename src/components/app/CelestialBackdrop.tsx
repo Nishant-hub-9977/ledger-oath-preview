@@ -102,6 +102,75 @@ export function CelestialBackdrop({
   );
 }
 
+function PainterlyLayer({
+  kind,
+  intensity,
+  eager,
+}: {
+  kind: Exclude<Painterly, "none">;
+  intensity: "default" | "subtle";
+  eager: boolean;
+}) {
+  const src = PAINTERLY_SRC[kind];
+
+  // Position + sizing per kind
+  const positionClass =
+    kind === "figure"
+      ? "object-right object-cover"
+      : kind === "fresco"
+      ? "object-top object-cover"
+      : "object-center object-cover";
+
+  // Edge mask so the painting dissolves into the page rather than
+  // sitting in a hard rectangle.
+  const maskByKind: Record<typeof kind, string> = {
+    figure:
+      "radial-gradient(ellipse 80% 95% at 78% 50%, #000 35%, transparent 78%)",
+    drift:
+      "radial-gradient(ellipse 95% 85% at 50% 45%, #000 45%, transparent 85%)",
+    fresco:
+      "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 90%)",
+  };
+  const mask = maskByKind[kind];
+
+  // Theme-tuned opacities (dark / light). Painting is decoration only.
+  const baseOpacityDark = intensity === "subtle" ? 0.14 : 0.22;
+  const baseOpacityLight = intensity === "subtle" ? 0.08 : 0.14;
+
+  return (
+    <>
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        className={`absolute inset-0 h-full w-full select-none painterly-dark ${positionClass}`}
+        style={{
+          WebkitMaskImage: mask,
+          maskImage: mask,
+          mixBlendMode: "luminosity",
+          opacity: baseOpacityDark,
+        }}
+      />
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        className={`absolute inset-0 h-full w-full select-none painterly-light ${positionClass}`}
+        style={{
+          WebkitMaskImage: mask,
+          maskImage: mask,
+          mixBlendMode: "multiply",
+          opacity: baseOpacityLight,
+        }}
+      />
+    </>
+  );
+}
+
 function gradientFor(v: Variant) {
   // All values map to design tokens already in styles.css.
   switch (v) {
