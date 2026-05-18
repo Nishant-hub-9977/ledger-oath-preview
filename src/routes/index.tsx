@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
+import { DemoBadge, Mark, SiteFooter, SiteHeader } from "@/components/app/AppChrome";
 import { AuditDossier } from "@/components/app/AuditDossier";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
-import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 
@@ -72,51 +72,21 @@ function Landing() {
 }
 
 function Header() {
-  return (
-    <header className="border-b border-border/60">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-        <a href="/" className="flex items-center gap-2.5">
-          <Mark />
-          <span className="font-display text-xl tracking-tight">LedgerOath</span>
-        </a>
-        <nav className="hidden items-center gap-10 text-sm text-muted-foreground md:flex">
-          <a href="#product" className="transition-colors hover:text-foreground">Product</a>
-          <a href="#decision-room-full" className="transition-colors hover:text-foreground">Decision Room</a>
-          <a href="#audit-dossier" className="transition-colors hover:text-foreground">Dossier</a>
-          <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
-        </nav>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <a
-            href="#command-center"
-            className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
-          >
-            Request access
-          </a>
-        </div>
-      </div>
-    </header>
-  );
+  return <SiteHeader variant="landing" />;
 }
 
-function Mark() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="10" stroke="currentColor" strokeOpacity="0.45" />
-      <path d="M11 3v16M3 11h16" stroke="currentColor" strokeOpacity="0.6" strokeWidth="0.75" />
-      <circle cx="11" cy="11" r="2.2" fill="var(--emerald-muted)" />
-    </svg>
-  );
-}
 
 function Hero() {
   return (
     <section id="product" className="relative overflow-hidden">
       <div className="mx-auto grid max-w-7xl gap-16 px-6 pb-24 pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-20 lg:px-10 lg:pb-32 lg:pt-28">
         <div className="flex flex-col justify-center">
-          <div className="mb-8 inline-flex w-fit items-center gap-2 rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-ivory-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-muted" />
-            Payment Governance Agent
+          <div className="mb-8 flex flex-wrap items-center gap-2">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-ivory-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-muted" />
+              Payment Governance Agent
+            </div>
+            <DemoBadge />
           </div>
 
           <h1 className="font-display text-[2.75rem] leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-[4.25rem]">
@@ -269,18 +239,6 @@ function TrustStrip() {
 }
 
 function Footer() {
-  return (
-    <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-xs text-ivory-muted/70 sm:flex-row sm:items-center sm:justify-between lg:px-10">
-        <div className="flex items-center gap-2.5">
-          <Mark />
-          <span className="font-display text-base text-foreground">LedgerOath</span>
-          <span className="ml-2">© {new Date().getFullYear()}</span>
-        </div>
-        <div className="font-mono uppercase tracking-[0.2em]">
-          Built for enterprise finance · Simulated environment
-        </div>
-      </div>
-    </footer>
-  );
+  return <SiteFooter />;
 }
+
