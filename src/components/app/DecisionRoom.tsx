@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState, Verdict } from "@/lib/decision/types";
 
 export function DecisionRoom({ review }: { review: ReviewState }) {
@@ -19,10 +20,11 @@ export function DecisionRoom({ review }: { review: ReviewState }) {
     <section
       id="decision-room-full"
       ref={ref}
-      className="relative border-t border-border bg-background"
+      className="relative overflow-hidden border-t border-border bg-background"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-muted/30 to-transparent" />
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
+      <CelestialBackdrop variant="verdict" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-celestial-teal/30 to-transparent" />
+      <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionLabel />
         {verdict ? <Verdict view={verdict} /> : <AwaitingState />}
       </div>
@@ -38,9 +40,9 @@ function SectionLabel() {
           <span className="h-px w-8 bg-border" />
           Decision Room
         </div>
-        <h2 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+        <h2 className="mt-6 font-display text-4xl leading-[1.02] tracking-tight sm:text-5xl">
           The verdict console.{" "}
-          <span className="italic text-ivory-muted">Every reason, on the record.</span>
+          <span className="italic text-ivory-muted">Every signal. Every reason. On the record.</span>
         </h2>
       </div>
       <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">

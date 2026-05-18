@@ -20,9 +20,9 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground grain">
+    <div className="celestial-shell min-h-screen bg-background text-foreground grain">
       <SiteHeader variant="auth" />
-      <main className="mx-auto grid max-w-7xl gap-16 px-6 py-16 lg:grid-cols-[1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">
+      <main className="relative mx-auto grid max-w-7xl gap-16 px-6 py-16 lg:grid-cols-[1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">
         <LeftPanel />
         <SignInCard />
       </main>

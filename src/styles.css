@@ -42,6 +42,7 @@
   --color-ivory-muted: var(--ivory-muted);
   --color-emerald-muted: var(--emerald-muted);
   --color-amber-restrained: var(--amber-restrained);
+  --color-celestial-teal: var(--celestial-teal);
   --color-danger-red: var(--danger-red);
   --color-hairline: var(--hairline);
 }
@@ -57,6 +58,7 @@
   /* +10–15% contrast bump for secondary text in dark mode */
   --ivory-muted: oklch(0.86 0.015 85);
   --emerald-muted: oklch(0.66 0.085 165);
+  --celestial-teal: oklch(0.72 0.08 195);
   --amber-restrained: oklch(0.80 0.105 75);
   --danger-red: oklch(0.64 0.165 25);
   --hairline: oklch(1 0 0 / 12%);
@@ -82,9 +84,11 @@
   --ring: var(--emerald-muted);
 
   --shadow-soft: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  --glow-soft: 0 0 80px -10px color-mix(in oklab, var(--celestial-teal) 22%, transparent);
   --paper-grain:
-    radial-gradient(ellipse at top, color-mix(in oklab, var(--navy) 60%, transparent), transparent 60%),
-    radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--emerald-muted) 8%, transparent), transparent 50%);
+    radial-gradient(ellipse at 80% -10%, color-mix(in oklab, var(--celestial-teal) 12%, transparent), transparent 55%),
+    radial-gradient(ellipse at 10% 110%, color-mix(in oklab, var(--amber-restrained) 6%, transparent), transparent 60%),
+    radial-gradient(ellipse at center, color-mix(in oklab, var(--navy) 60%, transparent), transparent 70%);
 }
 
 /* ───────────── Light mode — ivory dossier ─────────────
@@ -98,6 +102,7 @@
   --navy: oklch(0.96 0.014 85);           /* now: elevated parchment */
   --graphite: oklch(0.55 0.015 250);
   --emerald-muted: oklch(0.48 0.10 165);
+  --celestial-teal: oklch(0.46 0.07 215);
   --amber-restrained: oklch(0.58 0.14 65);
   --danger-red: oklch(0.52 0.18 25);
   --hairline: oklch(0.24 0.04 250 / 12%); /* muted blue-gray border */
@@ -178,6 +183,26 @@
     background: linear-gradient(to right, transparent, var(--hairline), transparent);
   }
   .shadow-soft { box-shadow: var(--shadow-soft); }
+  .glow-soft { box-shadow: var(--glow-soft, 0 0 80px -10px color-mix(in oklab, var(--emerald-muted) 22%, transparent)); }
+
+  /* App-wide celestial backdrop — drifts across the entire scroll. */
+  .celestial-shell { position: relative; isolation: isolate; }
+  .celestial-shell::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 75% 0%, color-mix(in oklab, var(--celestial-teal) 10%, transparent), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 15% 100%, color-mix(in oklab, var(--amber-restrained) 7%, transparent), transparent 60%);
+  }
+  .celestial-shell > * { position: relative; z-index: 1; }
+
+  /* Celestial arc — thin decorative SVG-like divider */
+  .celestial-arc {
+    background-image: radial-gradient(80% 100% at 50% 100%, transparent 49.6%, color-mix(in oklab, var(--foreground) 12%, transparent) 49.8%, transparent 50.2%);
+  }
 
   /* Thin technical corner marks for premium dossier cards */
   .corner-marks {

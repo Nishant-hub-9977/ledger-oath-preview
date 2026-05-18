@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState } from "@/lib/decision/types";
 
 const AGENTS: AgentEntry[] = [
@@ -85,10 +86,11 @@ export function AgentTimeline({ review }: { review: ReviewState }) {
     <section
       id="timeline"
       ref={ref}
-      className="relative border-t border-border bg-background"
+      className="relative overflow-hidden border-t border-border bg-background"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-muted/30 to-transparent" />
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
+      <CelestialBackdrop variant="starchart" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-celestial-teal/30 to-transparent" />
+      <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionHeader />
         {isDone ? <TimelineCards /> : <AwaitingPlaceholder />}
       </div>
@@ -101,16 +103,16 @@ function SectionHeader() {
     <div className="mb-12">
       <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-ivory-muted/80">
         <span className="h-px w-8 bg-border" />
-        Agent Timeline
+        Agent Star Chart
       </div>
-      <h2 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+      <h2 className="mt-6 font-display text-4xl leading-[1.02] tracking-tight sm:text-5xl">
         Mission log.{" "}
         <span className="italic text-ivory-muted">Every agent, on the record.</span>
       </h2>
       <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-        A complete trace of the autonomous agents that weighed the evidence,
-        measured the risk, and produced the verdict before any instruction was
-        released.
+        A full trace of the autonomous agents that weighed the evidence,
+        measured the thresholds, and rendered the verdict before any
+        instruction was released.
       </p>
     </div>
   );

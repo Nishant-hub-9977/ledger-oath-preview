@@ -42,7 +42,7 @@ const RECENT_REVIEWS = [
 
 function WorkspacePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground grain">
+    <div className="celestial-shell min-h-screen bg-background text-foreground grain">
       <SiteHeader variant="app" />
       <WorkspaceBar />
       <main className="mx-auto max-w-7xl px-6 py-12 lg:px-10 lg:py-16">
