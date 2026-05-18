@@ -72,8 +72,10 @@ export function SiteHeader({
           </nav>
         ) : null}
 
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+        <div className="flex items-center gap-4">
+          <div className="border-r border-border pr-4">
+            <ThemeToggle />
+          </div>
           {variant !== "auth" ? (
             <Link
               to="/login"
