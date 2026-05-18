@@ -486,20 +486,16 @@ function PolicyCard({
 function ActionButton({
   children,
   onClick,
-  variant = "solid",
 }: {
   children: React.ReactNode;
   onClick: () => void;
-  variant?: "solid" | "ghost";
 }) {
-  const base =
-    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] transition-colors";
-  const styles =
-    variant === "solid"
-      ? "bg-ivory text-navy-deep hover:bg-ivory/90"
-      : "border border-border text-ivory-muted hover:text-foreground hover:border-ivory/40";
   return (
-    <button type="button" onClick={onClick} className={`${base} ${styles}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory-muted underline-offset-[6px] decoration-emerald-muted/60 transition-colors duration-200 hover:text-foreground hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/40 rounded-sm"
+    >
       {children}
     </button>
   );
