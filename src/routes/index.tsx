@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
 import { DemoBadge, Mark, SiteFooter, SiteHeader } from "@/components/app/AppChrome";
 import { AuditDossier } from "@/components/app/AuditDossier";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
 import { Toaster } from "@/components/ui/sonner";
