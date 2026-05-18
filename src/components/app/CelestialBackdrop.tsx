@@ -2,9 +2,13 @@
  * CelestialBackdrop — shared atmospheric background system.
  *
  * Variants tailor a non-literal celestial / observatory / manuscript
- * atmosphere to each section. All layers are CSS gradients + lightweight
- * SVG linework, theme-aware via design tokens. Strictly decorative.
+ * atmosphere to each section. Layers: gradient bloom, painterly fresco
+ * image, SVG linework, paper grain. Theme-aware via design tokens.
  */
+
+import frescoFigure from "@/assets/atmos/fresco-figure.jpg";
+import celestialDrift from "@/assets/atmos/celestial-drift.jpg";
+import parchmentFresco from "@/assets/atmos/parchment-fresco.jpg";
 
 type Variant =
   | "observatory" // landing hero — grandeur
@@ -14,20 +18,47 @@ type Variant =
   | "archive" // dossier — archival calm
   | "manuscript"; // auth / workspace — quiet ivory ambience
 
+type Painterly = "figure" | "drift" | "fresco" | "none";
+
+const DEFAULT_PAINTERLY: Record<Variant, Painterly> = {
+  observatory: "figure",
+  manuscript: "figure",
+  verdict: "drift",
+  starchart: "drift",
+  archive: "fresco",
+  chamber: "fresco",
+};
+
+const PAINTERLY_SRC: Record<Exclude<Painterly, "none">, string> = {
+  figure: frescoFigure,
+  drift: celestialDrift,
+  fresco: parchmentFresco,
+};
+
 export function CelestialBackdrop({
   variant = "observatory",
   intensity = "default",
+  painterly,
+  eager = false,
 }: {
   variant?: Variant;
   intensity?: "default" | "subtle";
+  painterly?: Painterly;
+  eager?: boolean;
 }) {
   const op = intensity === "subtle" ? 0.55 : 1;
+  const p = painterly ?? DEFAULT_PAINTERLY[variant];
   return (
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ opacity: op }}
     >
+      {/* Layer 0 — painterly fresco image (dissolves into theme) */}
+      {p !== "none" && (
+        <PainterlyLayer kind={p} intensity={intensity} eager={eager} />
+      )}
+
       {/* Layer 1 — atmospheric gradient bloom */}
       <div className={`absolute inset-0 ${gradientFor(variant)}`} />
 
