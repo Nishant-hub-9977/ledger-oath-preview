@@ -231,11 +231,12 @@ function ReviewPreview({
   const isDone = review.status === "done";
   const isLoading = review.status === "loading";
 
-  const decision = isDone ? review.decision : isLoading ? "…" : "Waiting";
-  const risk = isDone ? review.risk : "—";
-  const vendor = isDone ? review.vendor : fields.vendor || "—";
-  const amount = isDone ? review.amount : fields.invoiceAmount || "—";
-  const approvers = isDone ? review.approvers : "—";
+  const v = isDone ? review.verdict : null;
+  const decision = v ? v.decision : isLoading ? "…" : "Waiting";
+  const risk = v ? String(v.riskScore) : "—";
+  const vendor = v ? v.vendor.name : fields.vendor || "—";
+  const amount = v ? v.invoice.amount : fields.invoiceAmount || "—";
+  const approvers = v ? v.requiredApproversShort : "—";
 
   return (
     <div className="relative">
