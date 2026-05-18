@@ -3,6 +3,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
 @theme inline {
   --font-display: "Instrument Serif", ui-serif, Georgia, serif;
@@ -41,13 +42,14 @@
   --color-ivory-muted: var(--ivory-muted);
   --color-emerald-muted: var(--emerald-muted);
   --color-amber-restrained: var(--amber-restrained);
+  --color-danger-red: var(--danger-red);
   --color-hairline: var(--hairline);
 }
 
+/* ───────────── Dark mode (default) — quiet-luxury fintech ───────────── */
 :root {
   --radius: 0.5rem;
 
-  /* Quiet-luxury fintech palette */
   --navy-deep: oklch(0.18 0.03 250);
   --navy: oklch(0.24 0.035 250);
   --graphite: oklch(0.32 0.012 250);
@@ -55,6 +57,7 @@
   --ivory-muted: oklch(0.78 0.015 85);
   --emerald-muted: oklch(0.62 0.08 165);
   --amber-restrained: oklch(0.78 0.10 75);
+  --danger-red: oklch(0.62 0.16 25);
   --hairline: oklch(1 0 0 / 8%);
 
   --background: var(--navy-deep);
@@ -71,11 +74,60 @@
   --muted-foreground: var(--ivory-muted);
   --accent: var(--emerald-muted);
   --accent-foreground: var(--navy-deep);
-  --destructive: oklch(0.58 0.18 25);
+  --destructive: var(--danger-red);
   --destructive-foreground: var(--ivory);
   --border: var(--hairline);
   --input: oklch(1 0 0 / 10%);
   --ring: var(--emerald-muted);
+
+  --shadow-soft: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  --paper-grain:
+    radial-gradient(ellipse at top, color-mix(in oklab, var(--navy) 60%, transparent), transparent 60%),
+    radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--emerald-muted) 8%, transparent), transparent 50%);
+}
+
+/* ───────────── Light mode — ivory dossier ─────────────
+   Token names are kept (ivory / navy-deep / amber / emerald)
+   so existing components flip without rewrites. */
+.light {
+  /* Parchment-warm ivory base, deep navy ink */
+  --ivory: oklch(0.24 0.04 250);          /* now: navy ink (text "ivory" becomes ink) */
+  --ivory-muted: oklch(0.46 0.025 250);   /* now: graphite secondary */
+  --navy-deep: oklch(0.975 0.012 85);     /* now: warm parchment (bg) */
+  --navy: oklch(0.96 0.014 85);           /* now: elevated parchment */
+  --graphite: oklch(0.55 0.015 250);
+  --emerald-muted: oklch(0.48 0.10 165);
+  --amber-restrained: oklch(0.58 0.14 65);
+  --danger-red: oklch(0.52 0.18 25);
+  --hairline: oklch(0.24 0.04 250 / 12%); /* muted blue-gray border */
+
+  --background: var(--navy-deep);
+  --foreground: var(--ivory);
+  --card: oklch(0.99 0.008 85);
+  --card-foreground: var(--ivory);
+  --popover: var(--card);
+  --popover-foreground: var(--ivory);
+  --primary: oklch(0.24 0.04 250);        /* navy button */
+  --primary-foreground: oklch(0.975 0.012 85);
+  --secondary: oklch(0.94 0.016 85);
+  --secondary-foreground: var(--ivory);
+  --muted: oklch(0.95 0.012 85);
+  --muted-foreground: var(--ivory-muted);
+  --accent: var(--emerald-muted);
+  --accent-foreground: oklch(0.99 0.008 85);
+  --destructive: var(--danger-red);
+  --destructive-foreground: oklch(0.99 0.008 85);
+  --border: var(--hairline);
+  --input: oklch(0.24 0.04 250 / 14%);
+  --ring: var(--emerald-muted);
+
+  --shadow-soft: 0 24px 60px -32px oklch(0.24 0.04 250 / 0.18);
+  /* Subtle paper grid: faint blueprint-style lines + warm vignette */
+  --paper-grain:
+    linear-gradient(to right, oklch(0.24 0.04 250 / 0.035) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(to bottom, oklch(0.24 0.04 250 / 0.035) 1px, transparent 1px) 0 0 / 56px 56px,
+    radial-gradient(ellipse at top, oklch(0.58 0.14 65 / 0.06), transparent 60%),
+    radial-gradient(ellipse at bottom right, oklch(0.48 0.10 165 / 0.05), transparent 55%);
 }
 
 @layer base {
@@ -92,6 +144,17 @@
     font-feature-settings: "ss01", "cv11";
   }
 
+  /* Smooth theme transitions */
+  html, body, header, footer, section, nav, aside, main, article, div, button, a, span, h1, h2, h3, h4, h5, h6, p, li, ul, input, textarea, svg {
+    transition:
+      background-color 240ms ease,
+      border-color 240ms ease,
+      color 240ms ease,
+      box-shadow 240ms ease,
+      fill 240ms ease,
+      stroke 240ms ease;
+  }
+
   ::selection {
     background: color-mix(in oklab, var(--emerald-muted) 40%, transparent);
     color: var(--ivory);
@@ -102,11 +165,36 @@
   .font-display { font-family: var(--font-display); }
   .font-mono { font-family: var(--font-mono); }
   .grain {
-    background-image:
-      radial-gradient(ellipse at top, color-mix(in oklab, var(--navy) 60%, transparent), transparent 60%),
-      radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--emerald-muted) 8%, transparent), transparent 50%);
+    background-image: var(--paper-grain);
   }
   .hairline-divider {
     background: linear-gradient(to right, transparent, var(--hairline), transparent);
+  }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+
+  /* Thin technical corner marks for premium dossier cards */
+  .corner-marks {
+    position: relative;
+  }
+  .corner-marks::before,
+  .corner-marks::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: color-mix(in oklab, var(--foreground) 35%, transparent);
+    border-style: solid;
+    border-width: 0;
+    pointer-events: none;
+  }
+  .corner-marks::before {
+    top: 8px; left: 8px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+  }
+  .corner-marks::after {
+    bottom: 8px; right: 8px;
+    border-bottom-width: 1px;
+    border-right-width: 1px;
   }
 }

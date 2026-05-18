@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 
 export const Route = createFileRoute("/")({
@@ -79,12 +80,15 @@ function Header() {
           <a href="#decision-room-full" className="transition-colors hover:text-foreground">Decision Room</a>
           <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
         </nav>
-        <a
-          href="#command-center"
-          className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
-        >
-          Request access
-        </a>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <a
+            href="#command-center"
+            className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
+          >
+            Request access
+          </a>
+        </div>
       </div>
     </header>
   );
