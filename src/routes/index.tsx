@@ -125,15 +125,20 @@ function Hero() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-5">
-            <a
-              href="#command-center"
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("lo:runDemo"));
+                }
+              }}
               className="group inline-flex items-center gap-3 rounded-full bg-ivory px-6 py-3.5 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90"
             >
               Run Demo Review
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">
                 <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </a>
+            </button>
             <a href="#architecture" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               See the architecture →
             </a>
