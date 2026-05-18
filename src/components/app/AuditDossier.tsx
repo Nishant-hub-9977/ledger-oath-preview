@@ -132,16 +132,21 @@ ${actions}
 `;
 }
 
-function Dossier({ v }: { v: Verdict }) {
+function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
   const summary = buildSummary(v);
   const json = JSON.stringify(v, null, 2);
   const markdown = buildMarkdown(v, summary);
   const [jsonOpen, setJsonOpen] = useState(false);
 
-  async function copy(text: string, label: string) {
+  const logExport = (kind: "summary" | "json" | "markdown") => {
+    if (dbId) void recordExport({ paymentReviewDbId: dbId, exportType: kind });
+  };
+
+  async function copy(text: string, label: string, kind: "summary" | "json") {
     try {
       await navigator.clipboard.writeText(text);
       toast.success(`${label} copied`);
+      logExport(kind);
     } catch {
       toast.error(`Couldn't copy ${label.toLowerCase()}`);
     }
