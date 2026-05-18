@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
@@ -119,6 +119,28 @@ export function CommandCenter({
       void persistReview(canonical, "fallback");
     }
   };
+
+  // External trigger: Hero "Run Demo Review" button dispatches this event.
+  // For signed-out users: deterministic Northline verdict (no credits, no save).
+  // For signed-in users: loads demo case into the form, then runs the full
+  // analyze + persist flow so the dossier lands in their workspace ledger.
+  const runReviewRef = useRef(runReview);
+  runReviewRef.current = runReview;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => {
+      setFields(DEMO_CASE);
+      // Defer one tick so the form reflects the demo case before analysis.
+      window.setTimeout(() => {
+        void runReviewRef.current();
+        document
+          .getElementById("command-center")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    };
+    window.addEventListener("lo:runDemo", handler);
+    return () => window.removeEventListener("lo:runDemo", handler);
+  }, [setFields]);
 
   return (
     <section
