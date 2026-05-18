@@ -84,9 +84,11 @@
   --ring: var(--emerald-muted);
 
   --shadow-soft: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  --glow-soft: 0 0 80px -10px color-mix(in oklab, var(--celestial-teal) 22%, transparent);
   --paper-grain:
-    radial-gradient(ellipse at top, color-mix(in oklab, var(--navy) 60%, transparent), transparent 60%),
-    radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--emerald-muted) 8%, transparent), transparent 50%);
+    radial-gradient(ellipse at 80% -10%, color-mix(in oklab, var(--celestial-teal) 12%, transparent), transparent 55%),
+    radial-gradient(ellipse at 10% 110%, color-mix(in oklab, var(--amber-restrained) 6%, transparent), transparent 60%),
+    radial-gradient(ellipse at center, color-mix(in oklab, var(--navy) 60%, transparent), transparent 70%);
 }
 
 /* ───────────── Light mode — ivory dossier ─────────────
