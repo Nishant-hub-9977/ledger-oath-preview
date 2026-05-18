@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
+import isoNetwork from "@/assets/atmos/iso-network.png";
 import type { ReviewState } from "@/lib/decision/types";
 
 const AGENTS: AgentEntry[] = [
