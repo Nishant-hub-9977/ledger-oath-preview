@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
+import isoNetwork from "@/assets/atmos/iso-network.png";
 import type { ReviewState } from "@/lib/decision/types";
 
 const AGENTS: AgentEntry[] = [
@@ -90,6 +91,19 @@ export function AgentTimeline({ review }: { review: ReviewState }) {
     >
       <CelestialBackdrop variant="starchart" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-celestial-teal/30 to-transparent" />
+      <img
+        src={isoNetwork}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="iso-lineart pointer-events-none absolute right-[-40px] top-4 hidden w-[480px] max-w-[42%] select-none lg:block xl:w-[560px]"
+        style={{
+          WebkitMaskImage:
+            "radial-gradient(ellipse 70% 75% at 55% 50%, #000 35%, transparent 80%)",
+          maskImage:
+            "radial-gradient(ellipse 70% 75% at 55% 50%, #000 35%, transparent 80%)",
+        }}
+      />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionHeader />
         {isDone ? <TimelineCards /> : <AwaitingPlaceholder />}

@@ -1,75 +1,73 @@
 ## Goal
 
-Layer a Renaissance/classical painterly atmosphere (like the Dualite "masterpiece" and Momentum "Celestial Drift" references) behind every section of LedgerOath — without rebuilding components, breaking themes, or hurting readability.
+Bring the second aesthetic — **isometric technical line illustrations** (stacked UI planes, dashed grids, constellation graphs) — into LedgerOath as foreground decorative artwork, while the Renaissance painterly backdrops keep doing their atmospheric job underneath.
 
-The current `CelestialBackdrop` is pure SVG linework. We will keep it, and add a new **painterly image layer** behind it. One small, reusable set of images does the entire app.
+The two aesthetics complement each other perfectly:
+- **Painterly backdrops** = soul, gravitas, "celestial governance" mood.
+- **Isometric lineart** = mind, system, "this is engineered" signal.
 
 ## Strategy (credit-efficient)
 
-Instead of generating a unique image per section (expensive), generate **only 3 master images** and reuse them via variant + opacity + positioning:
+Generate **2 transparent-PNG line illustrations** at standard quality, then drop each into one carefully chosen section. CSS handles theme inversion (black ink on ivory → ivory ink on navy) so one asset works in both modes.
 
-1. `fresco-figure.jpg` — a classical robed figure / statue on the right side (used on Hero, Login, Signup, Workspace empty states). Mirrors reference image #2.
-2. `celestial-drift.jpg` — atmospheric green-teal cosmic landscape (used on Decision Room, Timeline, Audit Dossier). Mirrors reference image #3.
-3. `parchment-fresco.jpg` — soft ceiling-fresco texture with cherubs/clouds, very desaturated (used as the global `celestial-shell` ambient wash, behind Command Center and any long-scroll page). Mirrors reference image #1's top band.
+### The 2 illustrations
 
-All three generated at `standard` quality (not premium), 1536×1024, JPG. Total: **3 image gens**.
+1. **`iso-stack.png`** — isometric stack of UI/browser planes (matches uploaded image #4): floating windows, a password field, wires connecting to a central glowing node, dashed grid floor. Pure black lineart on transparent.
+   → Placed in **Command Center** as a right-side hero illustration. Reinforces "this is where you wire up the review."
+
+2. **`iso-network.png`** — isometric translucent plane with a constellation/network graph of nodes and edges floating above a faint UI plane (matches uploaded image #5). Pure black lineart on transparent.
+   → Placed in **Agent Timeline (Star Chart)** as a header illustration. Reinforces the multi-agent topology.
+
+Both are transparent PNGs so the painterly backdrop and SVG linework continue to show through where the illustration's negative space falls.
 
 ## Implementation
 
-### 1. Generate assets (parallel, 3 calls)
-- `src/assets/atmos/fresco-figure.jpg`
-- `src/assets/atmos/celestial-drift.jpg`
-- `src/assets/atmos/parchment-fresco.jpg`
+### 1. Generate assets (2 parallel calls, standard quality)
+- `src/assets/atmos/iso-stack.png` (1536×1024, transparent)
+- `src/assets/atmos/iso-network.png` (1536×1024, transparent)
 
-Prompts tuned for: muted Renaissance palette, heavy grain, edges fading to ivory/navy so they composite cleanly. No text, no logos.
+Prompts: "isometric technical line illustration, thin black ink on transparent background, dashed perspective grid floor, no color, no text, editorial blueprint style" — variant 1 stacks browser/auth windows + central node; variant 2 shows a node-edge constellation on a translucent plane.
 
-### 2. Extend `CelestialBackdrop.tsx` (single file edit)
-Add an optional `painterly` image layer behind the existing SVG motifs:
-- New prop `painterly?: "figure" | "drift" | "fresco" | "none"` (default per-variant).
-- Renders an `<img>` absolutely positioned, with:
-  - `mix-blend-mode: luminosity` in dark mode, `multiply` in light mode (via a `light:` variant class), so the image tints to the theme instead of fighting it.
-  - Opacity `0.18` dark / `0.12` light, tunable via `intensity`.
-  - Masked edges using `mask-image: radial-gradient(...)` so the painting dissolves into the page rather than sitting in a hard rectangle.
-  - Positioned right-anchored for `figure`, full-bleed for `drift`, top-anchored for `fresco`.
-- Existing SVG linework + grain stay on top — they keep the editorial/technical signal.
+### 2. Add a single theme-aware utility in `styles.css`
+```css
+.iso-lineart { opacity: 0.85; }
+.dark .iso-lineart, html:not(.light) .iso-lineart { filter: invert(1) brightness(1.05); opacity: 0.55; }
+```
+This is the only CSS needed — one rule, both themes covered.
 
-### 3. Wire variants to images (no new components)
-Default mapping inside `CelestialBackdrop`:
-- `observatory` (Hero) → `figure`
-- `manuscript` (Auth, Workspace) → `figure` (subtle)
-- `verdict` (Decision Room) → `drift`
-- `starchart` (Timeline) → `drift` (subtle)
-- `archive` (Dossier) → `fresco` (subtle)
-- `chamber` (Command Center) → `fresco` (subtle)
+### 3. Place in 2 sections (one `<img>` each, no new components)
 
-All sections already use `CelestialBackdrop`, so **no section component needs touching**.
+**`src/components/app/CommandCenter.tsx`**
+- Wrap the existing header/intro row in a relative container and add `iso-stack.png` as an absolutely-positioned decorative `<img>` on the right side at a contained size (e.g. `max-w-[480px]`, `right-0`, `top-0`, `hidden lg:block`, `iso-lineart`, `aria-hidden`, `loading="lazy"`).
+- Existing form/content keeps its current grid; the illustration sits behind it via `-z-0` so nothing interactive is blocked.
 
-### 4. Global ambient wash in `styles.css`
-Add a very faint `parchment-fresco.jpg` as a `background-image` on `.celestial-shell::before` (alongside the existing radial gradients) at ~6% opacity. This gives every long-scroll page a subtle painterly cast even between section backdrops. One CSS edit.
+**`src/components/app/AgentTimeline.tsx`**
+- Same pattern: add `iso-network.png` as a decorative absolutely-positioned `<img>` near the section header (top-right, `hidden lg:block`, `max-w-[420px]`, `iso-lineart`).
 
-### 5. Readability guards
-- All foreground cards keep `bg-card/90` + `backdrop-blur-sm` where they already do.
-- New layer sits at `z-index: 0` behind existing `z-1` content — no interaction changes.
-- `prefers-reduced-motion` unaffected (images are static).
-- Light mode: lower opacity + `multiply` blend prevents the painting from muddying ivory.
+No layout changes, no flow changes, no copy changes.
+
+### 4. Readability guards
+- `hidden lg:block` keeps them off mobile/tablet where space is tight.
+- `pointer-events-none` + `aria-hidden` on both.
+- `-z-0` behind cards but above the celestial backdrop layer.
+- Opacity caps (0.55 dark / 0.85 light) prevent the lineart from competing with text.
 
 ## Files touched
-- **New**: `src/assets/atmos/fresco-figure.jpg`, `celestial-drift.jpg`, `parchment-fresco.jpg`
-- **Edit**: `src/components/app/CelestialBackdrop.tsx` (add painterly layer + variant mapping)
-- **Edit**: `src/styles.css` (add image to `.celestial-shell::before`)
+- **New**: `src/assets/atmos/iso-stack.png`, `src/assets/atmos/iso-network.png`
+- **Edit**: `src/styles.css` (one utility class)
+- **Edit**: `src/components/app/CommandCenter.tsx` (one `<img>`)
+- **Edit**: `src/components/app/AgentTimeline.tsx` (one `<img>`)
 
-That's it. **3 image generations + 2 file edits.** No new routes, no new components, no flow changes, no backend.
+**Total: 2 image generations + 3 small edits.**
 
 ## What you'll see
-- Hero: robed classical figure dissolving on the right, behind the existing observatory linework.
-- Decision Room / Timeline: deep teal celestial landscape washing the background.
-- Command Center / Dossier: faint ceiling-fresco haze at the top, parchment grain below.
-- Light mode: the same paintings appear as sepia-tinted parchment imprints, sovereign-audit style.
-- Dark mode: same paintings appear as desaturated luminous frescoes, observatory style.
+- Command Center: faint isometric stack of UI panes on the right, behind your inputs, sitting on the painterly fresco haze.
+- Agent Timeline: faint isometric network/constellation in the top-right of the section header, hovering above the aurora backdrop.
+- Both flip from black ink (light mode) to ivory ink (dark mode) automatically.
+- Everything else — flows, copy, painterly backdrops — untouched.
 
 ## Risks / mitigations
-- **Contrast on text** → opacity caps + edge masks + existing card backdrops.
-- **Image weight** → 3 shared JPGs, lazy via standard `<img loading="lazy">` except hero.
-- **AI-generated faces looking off** → prompts favor statues, drapery, and landscapes over portraits; figure is partial/side-lit.
+- **Visual clutter** → opacity caps + `hidden lg:block` + restricted to 2 sections only.
+- **Generated lineart looking messy** → standard quality + transparent PNG + the existing layers will mask imperfections.
 
-Approve and I'll execute in one batch.
+Approve and I'll execute.
