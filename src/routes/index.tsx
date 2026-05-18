@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CommandCenter } from "@/components/app/CommandCenter";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +45,7 @@ function Landing() {
       <main>
         <Hero />
         <TrustStrip />
+        <CommandCenter />
       </main>
       <Footer />
     </div>
