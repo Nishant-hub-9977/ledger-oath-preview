@@ -1,4 +1,5 @@
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
+import isoStack from "@/assets/atmos/iso-stack.png";
 import {
   DEMO_CASE,
   NORTHLINE_VERDICT,
