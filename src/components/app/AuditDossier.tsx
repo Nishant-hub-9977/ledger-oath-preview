@@ -161,7 +161,7 @@ function Dossier({ v }: { v: Verdict }) {
   return (
     <div className="space-y-6">
       {/* Bento grid */}
-      <div className="grid auto-rows-min gap-4 lg:grid-cols-6">
+      <div className="grid auto-rows-min gap-3 lg:grid-cols-6">
         {/* Executive Summary — hero */}
         <Tile className="lg:col-span-6">
           <TileHeader
@@ -172,16 +172,16 @@ function Dossier({ v }: { v: Verdict }) {
           <p className="mt-6 font-display text-2xl leading-snug text-foreground sm:text-3xl">
             {summary}
           </p>
-          <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-border pt-5">
+          <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-border pt-5">
             <ActionButton onClick={() => copy(summary, "Summary")}>
               Copy summary
             </ActionButton>
-            <ActionButton onClick={exportMarkdown} variant="ghost">
+            <ActionButton onClick={exportMarkdown}>
               Export markdown
             </ActionButton>
-            <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-restrained">
+            <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-amber-restrained/40 bg-amber-restrained/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-restrained">
               <span className="h-1 w-1 rounded-full bg-amber-restrained" />
-              SIMULATED ONLY
+              SIMULATED ONLY · No real payment executed
             </span>
           </div>
         </Tile>
@@ -313,17 +313,25 @@ function Dossier({ v }: { v: Verdict }) {
         <Tile className="lg:col-span-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <TileHeader eyebrow="Machine-readable" title="JSON record" tag="08" />
-            <div className="flex items-center gap-2">
-              <ActionButton onClick={() => setJsonOpen((o) => !o)} variant="ghost">
+            <div className="flex items-center gap-5">
+              <ActionButton onClick={() => setJsonOpen((o) => !o)}>
                 {jsonOpen ? "Hide JSON" : "Show JSON"}
               </ActionButton>
               <ActionButton onClick={() => copy(json, "JSON")}>Copy JSON</ActionButton>
             </div>
           </div>
           {jsonOpen ? (
-            <pre className="mt-6 max-h-[420px] overflow-auto rounded-xl border border-border bg-background/60 p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
-              {json}
-            </pre>
+            <div className="mt-6 overflow-hidden rounded-xl border border-border bg-background/60">
+              <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-4 py-2">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted">
+                  dossier.json · {v.reviewId}
+                </span>
+                <ActionButton onClick={() => copy(json, "JSON")}>Copy</ActionButton>
+              </div>
+              <pre className="max-h-[420px] overflow-auto p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
+                {json}
+              </pre>
+            </div>
           ) : (
             <p className="mt-6 text-sm text-muted-foreground">
               Structured dossier payload for downstream ERP, ledger, and audit
@@ -478,20 +486,16 @@ function PolicyCard({
 function ActionButton({
   children,
   onClick,
-  variant = "solid",
 }: {
   children: React.ReactNode;
   onClick: () => void;
-  variant?: "solid" | "ghost";
 }) {
-  const base =
-    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] transition-colors";
-  const styles =
-    variant === "solid"
-      ? "bg-ivory text-navy-deep hover:bg-ivory/90"
-      : "border border-border text-ivory-muted hover:text-foreground hover:border-ivory/40";
   return (
-    <button type="button" onClick={onClick} className={`${base} ${styles}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory-muted underline-offset-[6px] decoration-emerald-muted/60 transition-colors duration-200 hover:text-foreground hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/40 rounded-sm"
+    >
       {children}
     </button>
   );

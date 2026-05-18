@@ -114,8 +114,9 @@ function Hero() {
             </a>
           </div>
 
-          <p className="mt-10 max-w-md text-xs leading-relaxed text-ivory-muted/70">
-            Simulated payment instruction only. No real payment has been executed.
+          <p className="mt-10 inline-flex max-w-md items-center gap-2 rounded-md border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-amber-restrained">
+            <span className="h-1 w-1 rounded-full bg-amber-restrained" />
+            Simulated only · no real payment has been executed
           </p>
         </div>
 
