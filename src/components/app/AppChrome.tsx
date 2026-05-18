@@ -33,43 +33,39 @@ export function SiteHeader({
 
         {variant === "landing" ? (
           <nav className="hidden items-center gap-9 text-sm text-muted-foreground md:flex">
-            <a href="/#product" className="transition-colors hover:text-foreground">
-              Product
-            </a>
-            <a
-              href="/#decision-room-full"
-              className="transition-colors hover:text-foreground"
-            >
-              Decision Room
-            </a>
-            <a
-              href="/#audit-dossier"
-              className="transition-colors hover:text-foreground"
-            >
-              Dossier
-            </a>
-            <a
-              href="/#architecture"
-              className="transition-colors hover:text-foreground"
-            >
-              Architecture
-            </a>
+            {[
+              { href: "/#product", label: "Product" },
+              { href: "/#decision-room-full", label: "Decision Room" },
+              { href: "/#audit-dossier", label: "Dossier" },
+              { href: "/#architecture", label: "Architecture" },
+            ].map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+              >
+                {l.label}
+              </a>
+            ))}
           </nav>
         ) : variant === "app" ? (
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <Link
               to="/app"
-              activeProps={{ className: "text-foreground" }}
-              className="transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground border-b border-emerald-muted/60" }}
+              className="rounded-sm pb-0.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
             >
               Workspace
             </Link>
-            <a href="/#command-center" className="transition-colors hover:text-foreground">
+            <a
+              href="/#command-center"
+              className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+            >
               Command Center
             </a>
             <a
               href="/#audit-dossier"
-              className="transition-colors hover:text-foreground"
+              className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
             >
               Dossier
             </a>
@@ -110,15 +106,25 @@ export function SiteHeader({
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-xs text-ivory-muted/70 sm:flex-row sm:items-center sm:justify-between lg:px-10">
-        <div className="flex items-center gap-2.5">
+      <div className="mx-auto grid max-w-7xl gap-4 px-6 py-8 text-[11px] text-ivory-muted/70 sm:grid-cols-3 sm:items-center lg:px-10">
+        <div className="flex items-center gap-2.5 justify-self-start">
           <Mark />
           <span className="font-display text-base text-foreground">LedgerOath</span>
           <span className="ml-2">© {new Date().getFullYear()}</span>
         </div>
-        <div className="font-mono uppercase tracking-[0.2em]">
+        <div className="text-center font-mono uppercase tracking-[0.2em]">
           Built for enterprise finance · Simulated environment
         </div>
+        <a
+          href="#top"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="justify-self-end rounded-full border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+        >
+          Back to top ↑
+        </a>
       </div>
     </footer>
   );

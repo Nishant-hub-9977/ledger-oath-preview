@@ -28,7 +28,7 @@ export function CommandCenter({
     setReview({ status: "loading" });
     window.setTimeout(() => {
       setReview({ status: "done", verdict: NORTHLINE_VERDICT });
-    }, 1400);
+    }, 1000);
   };
 
   return (

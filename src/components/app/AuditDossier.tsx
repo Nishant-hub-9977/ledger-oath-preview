@@ -161,7 +161,7 @@ function Dossier({ v }: { v: Verdict }) {
   return (
     <div className="space-y-6">
       {/* Bento grid */}
-      <div className="grid auto-rows-min gap-5 lg:grid-cols-6">
+      <div className="grid auto-rows-min gap-4 lg:grid-cols-6">
         {/* Executive Summary — hero */}
         <Tile className="lg:col-span-6">
           <TileHeader
