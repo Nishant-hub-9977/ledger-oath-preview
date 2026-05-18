@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState, Verdict } from "@/lib/decision/types";
+import { recordExport } from "@/lib/decision/persist";
 
-export function AuditDossier({ review }: { review: ReviewState }) {
+export function AuditDossier({
+  review,
+  dbId,
+}: {
+  review: ReviewState;
+  dbId?: string;
+}) {
   const ref = useRef<HTMLElement | null>(null);
   const isDone = review.status === "done";
   const verdict = isDone ? review.verdict : null;
@@ -27,7 +34,7 @@ export function AuditDossier({ review }: { review: ReviewState }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-celestial-teal/30 to-transparent" />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionLabel />
-        {verdict ? <Dossier v={verdict} /> : <Awaiting />}
+        {verdict ? <Dossier v={verdict} dbId={dbId} /> : <Awaiting />}
       </div>
     </section>
   );

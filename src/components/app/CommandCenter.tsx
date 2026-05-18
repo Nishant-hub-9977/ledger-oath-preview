@@ -1,11 +1,21 @@
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import isoStack from "@/assets/atmos/iso-stack.png";
 import {
   DEMO_CASE,
-  NORTHLINE_VERDICT,
   type CaseFields,
   type ReviewState,
 } from "@/lib/decision/types";
+import {
+  NORTHLINE_CANONICAL,
+  toLegacyVerdict,
+  type CanonicalReview,
+} from "@/lib/decision/canonical";
+import { analyzePaymentReview } from "@/lib/decision/analyze.functions";
+import { saveReview, uploadInvoiceFile } from "@/lib/decision/persist";
+import { useAuth } from "@/hooks/use-auth";
 
 export function CommandCenter({
   fields,
@@ -18,6 +28,10 @@ export function CommandCenter({
   review: ReviewState;
   setReview: React.Dispatch<React.SetStateAction<ReviewState>>;
 }) {
+  const { user } = useAuth();
+  const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const analyze = useServerFn(analyzePaymentReview);
+
   const update = <K extends keyof CaseFields>(key: K, value: CaseFields[K]) =>
     setFields((f) => ({ ...f, [key]: value }));
 
@@ -26,11 +40,84 @@ export function CommandCenter({
     setReview({ status: "idle" });
   };
 
-  const runReview = () => {
+  const hasInputs =
+    !!fields.invoiceData.trim() ||
+    !!fields.vendorData.trim() ||
+    !!fields.policyModel.trim();
+
+  const persistReview = async (
+    canonical: CanonicalReview,
+    source: "live" | "fallback",
+  ) => {
+    if (!user) return;
+    try {
+      const saved = await saveReview({
+        result: canonical,
+        inputPayload: { fields, stagedFile: stagedFile?.name ?? null },
+        source,
+        isDemo: !hasInputs,
+      });
+      if (!saved) return;
+      if (stagedFile) {
+        const up = await uploadInvoiceFile({
+          file: stagedFile,
+          reviewDbId: saved.id,
+        });
+        if (!up.ok && up.error) toast.error(`Upload: ${up.error}`);
+      }
+      toast.success("Review saved to your workspace");
+    } catch (err) {
+      console.error("[persist]", err);
+    }
+  };
+
+  const runReview = async () => {
     setReview({ status: "loading" });
-    window.setTimeout(() => {
-      setReview({ status: "done", verdict: NORTHLINE_VERDICT });
-    }, 1000);
+
+    // Signed-out public demo: instant deterministic verdict, zero credits.
+    if (!user) {
+      const canonical = NORTHLINE_CANONICAL;
+      window.setTimeout(() => {
+        setReview({ status: "done", verdict: toLegacyVerdict(canonical) });
+      }, 600);
+      return;
+    }
+
+    // Signed-in: server fn handles live analysis or deterministic fallback.
+    try {
+      const res = await analyze({
+        data: {
+          caseName: fields.caseName,
+          reviewId: fields.reviewId,
+          vendorName: fields.vendor,
+          invoiceAmount: fields.invoiceAmount,
+          status: fields.status,
+          invoiceText: fields.invoiceData,
+          vendorMasterData: fields.vendorData,
+          governancePolicyModel: fields.policyModel,
+          costCenter: fields.costCenter,
+          routingHeuristics: fields.routing,
+          uploadedFileMetadata: stagedFile
+            ? {
+                name: stagedFile.name,
+                size: stagedFile.size,
+                type: stagedFile.type,
+              }
+            : null,
+          useDemoFallback: false,
+        },
+      });
+      setReview({ status: "done", verdict: toLegacyVerdict(res.result) });
+      if (res.note) toast.message(res.note);
+      // Fire-and-forget persistence.
+      void persistReview(res.result, res.source);
+    } catch (err) {
+      console.error("[runReview]", err);
+      const canonical = NORTHLINE_CANONICAL;
+      setReview({ status: "done", verdict: toLegacyVerdict(canonical) });
+      toast.error("Live analysis failed. Showing deterministic dossier.");
+      void persistReview(canonical, "fallback");
+    }
   };
 
   return (
@@ -94,13 +181,23 @@ export function CommandCenter({
               </Panel>
             </div>
 
-            <Panel index="07" title="Invoice Upload" subtitle="PDF or image">
-              <Dropzone />
+            <Panel index="07" title="Invoice Upload" subtitle="PDF or image · stored only when signed in">
+              <Dropzone
+                file={stagedFile}
+                onFile={setStagedFile}
+                signedIn={!!user}
+              />
             </Panel>
           </div>
 
           <div className="lg:sticky lg:top-8 lg:self-start">
-            <ReviewPreview fields={fields} review={review} onRun={runReview} onDemo={loadDemo} />
+            <ReviewPreview
+              fields={fields}
+              review={review}
+              onRun={runReview}
+              onDemo={loadDemo}
+              signedIn={!!user}
+            />
           </div>
         </div>
       </div>
@@ -215,19 +312,67 @@ function TextArea({
   );
 }
 
-function Dropzone() {
+function Dropzone({
+  file,
+  onFile,
+  signedIn,
+}: {
+  file: File | null;
+  onFile: (f: File | null) => void;
+  signedIn: boolean;
+}) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const pick = (f: File | null) => {
+    if (!f) return onFile(null);
+    const ALLOWED = ["application/pdf", "image/png", "image/jpeg", "image/jpg"];
+    if (!ALLOWED.includes(f.type)) {
+      toast.error("Unsupported file. PDF, PNG, or JPG only.");
+      return;
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      toast.error("File exceeds 10 MB limit.");
+      return;
+    }
+    onFile(f);
+  };
+
   return (
-    <div className="rounded-xl border border-dashed border-border bg-background/30 px-6 py-10 text-center">
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        const f = e.dataTransfer.files?.[0] ?? null;
+        pick(f);
+      }}
+      onClick={() => inputRef.current?.click()}
+      className="cursor-pointer rounded-xl border border-dashed border-border bg-background/30 px-6 py-10 text-center transition-colors hover:border-ivory/40"
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,image/png,image/jpeg"
+        className="hidden"
+        onChange={(e) => pick(e.target.files?.[0] ?? null)}
+      />
       <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-border text-ivory-muted">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
           <path d="M8 11V3M4.5 6.5L8 3l3.5 3.5M3 13h10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <div className="font-display text-base text-foreground">Drop invoice PDF or image</div>
-      <div className="mt-1 text-xs text-ivory-muted/70">or click to browse · PDF, PNG, JPG</div>
+      <div className="font-display text-base text-foreground">
+        {file ? file.name : "Drop invoice PDF or image"}
+      </div>
+      <div className="mt-1 text-xs text-ivory-muted/70">
+        {file
+          ? `${(file.size / 1024).toFixed(1)} KB · click to replace`
+          : "or click to browse · PDF, PNG, JPG · up to 10 MB"}
+      </div>
       <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-restrained/90">
         <span className="h-1 w-1 rounded-full bg-amber-restrained" />
-        Visual placeholder · file analysis connected later
+        {signedIn
+          ? "Uploaded to your workspace on Run"
+          : "Sign in to persist uploads"}
       </div>
     </div>
   );
@@ -238,11 +383,13 @@ function ReviewPreview({
   review,
   onRun,
   onDemo,
+  signedIn,
 }: {
   fields: CaseFields;
   review: ReviewState;
   onRun: () => void;
   onDemo: () => void;
+  signedIn: boolean;
 }) {
   const isDone = review.status === "done";
   const isLoading = review.status === "loading";
@@ -301,7 +448,7 @@ function ReviewPreview({
         {isLoading ? (
           <div className="mt-6 flex items-center gap-3 border-t border-border pt-5 font-mono text-[11px] text-emerald-muted">
             <Spinner />
-            Running governance review…
+            {signedIn ? "Running governance review…" : "Loading reference dossier…"}
           </div>
         ) : null}
 
