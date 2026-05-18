@@ -1,3 +1,4 @@
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import {
   DEMO_CASE,
   NORTHLINE_VERDICT,
