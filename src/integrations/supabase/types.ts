@@ -14,7 +14,254 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_exports: {
+        Row: {
+          created_at: string
+          export_type: string | null
+          id: string
+          payment_review_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          export_type?: string | null
+          id?: string
+          payment_review_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          export_type?: string | null
+          id?: string
+          payment_review_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_exports_payment_review_id_fkey"
+            columns: ["payment_review_id"]
+            isOneToOne: false
+            referencedRelation: "payment_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_reviews: {
+        Row: {
+          case_name: string | null
+          created_at: string
+          currency: string
+          decision: string | null
+          executive_summary: string | null
+          id: string
+          input_payload: Json | null
+          invoice_amount: number | null
+          invoice_amount_display: string | null
+          invoice_reference: string | null
+          is_demo: boolean
+          result_json: Json | null
+          review_id: string
+          risk_level: string | null
+          risk_score: number | null
+          source_mode: string
+          status: string | null
+          updated_at: string
+          user_id: string
+          vendor_name: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          case_name?: string | null
+          created_at?: string
+          currency?: string
+          decision?: string | null
+          executive_summary?: string | null
+          id?: string
+          input_payload?: Json | null
+          invoice_amount?: number | null
+          invoice_amount_display?: string | null
+          invoice_reference?: string | null
+          is_demo?: boolean
+          result_json?: Json | null
+          review_id: string
+          risk_level?: string | null
+          risk_score?: number | null
+          source_mode?: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          vendor_name?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          case_name?: string | null
+          created_at?: string
+          currency?: string
+          decision?: string | null
+          executive_summary?: string | null
+          id?: string
+          input_payload?: Json | null
+          invoice_amount?: number | null
+          invoice_amount_display?: string | null
+          invoice_reference?: string | null
+          is_demo?: boolean
+          result_json?: Json | null
+          review_id?: string
+          risk_level?: string | null
+          risk_score?: number | null
+          source_mode?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          vendor_name?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_reviews_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          intended_use_case: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          intended_use_case?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          intended_use_case?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      review_files: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          file_type: string | null
+          id: string
+          review_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          review_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          review_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_files_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "payment_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          company: string | null
+          created_at: string
+          id: string
+          mode: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
