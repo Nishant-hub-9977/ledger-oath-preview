@@ -35,9 +35,10 @@ export function CommandCenter({
   return (
     <section
       id="command-center"
-      className="relative border-t border-border bg-secondary/10"
+      className="relative overflow-hidden border-t border-border bg-secondary/10"
     >
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
+      <CelestialBackdrop variant="chamber" intensity="subtle" />
+      <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionHeader />
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
