@@ -283,7 +283,7 @@ function ReviewPreview({
         </div>
 
         {isLoading ? (
-          <div className="mt-6 flex items-center gap-3 border-t border-border pt-5 font-mono text-[11px] text-ivory-muted">
+          <div className="mt-6 flex items-center gap-3 border-t border-border pt-5 font-mono text-[11px] text-emerald-muted">
             <Spinner />
             Running governance review…
           </div>
@@ -293,20 +293,21 @@ function ReviewPreview({
           <button
             onClick={onRun}
             disabled={isLoading}
-            className="group inline-flex items-center justify-center gap-2 rounded-full bg-ivory px-5 py-3 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90 disabled:opacity-60"
+            className="group inline-flex items-center justify-center gap-2 rounded-full bg-ivory px-5 py-3 text-sm font-medium text-navy-deep transition-colors duration-200 hover:bg-ivory/90 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
           >
             {isLoading ? "Reviewing…" : "Run Payment Review"}
           </button>
           <button
             onClick={onDemo}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm text-foreground/90 transition-colors hover:border-ivory/40 hover:bg-secondary/40"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm text-foreground/90 transition-colors duration-200 hover:border-ivory/40 hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
           >
             Use Demo Case
           </button>
         </div>
 
-        <p className="mt-5 text-[11px] leading-relaxed text-ivory-muted/70">
-          Simulated payment instruction only. No real payment has been executed.
+        <p className="mt-5 inline-flex items-center gap-2 rounded-md border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-amber-restrained">
+          <span className="h-1 w-1 rounded-full bg-amber-restrained" />
+          Simulated only · no real payment has been executed
         </p>
       </div>
     </div>
