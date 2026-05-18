@@ -185,6 +185,13 @@
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .glow-soft { box-shadow: var(--glow-soft, 0 0 80px -10px color-mix(in oklab, var(--emerald-muted) 22%, transparent)); }
 
+  /* Painterly fresco layers — show the dark-tuned image in dark mode,
+     the light-tuned image in light mode. Pair lives inside CelestialBackdrop. */
+  .painterly-dark { display: block; }
+  .painterly-light { display: none; }
+  .light .painterly-dark { display: none; }
+  .light .painterly-light { display: block; }
+
   /* App-wide celestial backdrop — drifts across the entire scroll. */
   .celestial-shell { position: relative; isolation: isolate; }
   .celestial-shell::before {

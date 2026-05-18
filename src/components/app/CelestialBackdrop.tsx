@@ -2,9 +2,13 @@
  * CelestialBackdrop — shared atmospheric background system.
  *
  * Variants tailor a non-literal celestial / observatory / manuscript
- * atmosphere to each section. All layers are CSS gradients + lightweight
- * SVG linework, theme-aware via design tokens. Strictly decorative.
+ * atmosphere to each section. Layers: gradient bloom, painterly fresco
+ * image, SVG linework, paper grain. Theme-aware via design tokens.
  */
+
+import frescoFigure from "@/assets/atmos/fresco-figure.jpg";
+import celestialDrift from "@/assets/atmos/celestial-drift.jpg";
+import parchmentFresco from "@/assets/atmos/parchment-fresco.jpg";
 
 type Variant =
   | "observatory" // landing hero — grandeur
@@ -14,20 +18,47 @@ type Variant =
   | "archive" // dossier — archival calm
   | "manuscript"; // auth / workspace — quiet ivory ambience
 
+type Painterly = "figure" | "drift" | "fresco" | "none";
+
+const DEFAULT_PAINTERLY: Record<Variant, Painterly> = {
+  observatory: "figure",
+  manuscript: "figure",
+  verdict: "drift",
+  starchart: "drift",
+  archive: "fresco",
+  chamber: "fresco",
+};
+
+const PAINTERLY_SRC: Record<Exclude<Painterly, "none">, string> = {
+  figure: frescoFigure,
+  drift: celestialDrift,
+  fresco: parchmentFresco,
+};
+
 export function CelestialBackdrop({
   variant = "observatory",
   intensity = "default",
+  painterly,
+  eager = false,
 }: {
   variant?: Variant;
   intensity?: "default" | "subtle";
+  painterly?: Painterly;
+  eager?: boolean;
 }) {
   const op = intensity === "subtle" ? 0.55 : 1;
+  const p = painterly ?? DEFAULT_PAINTERLY[variant];
   return (
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ opacity: op }}
     >
+      {/* Layer 0 — painterly fresco image (dissolves into theme) */}
+      {p !== "none" && (
+        <PainterlyLayer kind={p} intensity={intensity} eager={eager} />
+      )}
+
       {/* Layer 1 — atmospheric gradient bloom */}
       <div className={`absolute inset-0 ${gradientFor(variant)}`} />
 
@@ -68,6 +99,75 @@ export function CelestialBackdrop({
       {/* Layer 3 — paper / observatory grain via tokens */}
       <div className="absolute inset-0 grain opacity-[0.55]" />
     </div>
+  );
+}
+
+function PainterlyLayer({
+  kind,
+  intensity,
+  eager,
+}: {
+  kind: Exclude<Painterly, "none">;
+  intensity: "default" | "subtle";
+  eager: boolean;
+}) {
+  const src = PAINTERLY_SRC[kind];
+
+  // Position + sizing per kind
+  const positionClass =
+    kind === "figure"
+      ? "object-right object-cover"
+      : kind === "fresco"
+      ? "object-top object-cover"
+      : "object-center object-cover";
+
+  // Edge mask so the painting dissolves into the page rather than
+  // sitting in a hard rectangle.
+  const maskByKind: Record<typeof kind, string> = {
+    figure:
+      "radial-gradient(ellipse 80% 95% at 78% 50%, #000 35%, transparent 78%)",
+    drift:
+      "radial-gradient(ellipse 95% 85% at 50% 45%, #000 45%, transparent 85%)",
+    fresco:
+      "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.55) 55%, transparent 90%)",
+  };
+  const mask = maskByKind[kind];
+
+  // Theme-tuned opacities (dark / light). Painting is decoration only.
+  const baseOpacityDark = intensity === "subtle" ? 0.14 : 0.22;
+  const baseOpacityLight = intensity === "subtle" ? 0.08 : 0.14;
+
+  return (
+    <>
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        className={`absolute inset-0 h-full w-full select-none painterly-dark ${positionClass}`}
+        style={{
+          WebkitMaskImage: mask,
+          maskImage: mask,
+          mixBlendMode: "luminosity",
+          opacity: baseOpacityDark,
+        }}
+      />
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        className={`absolute inset-0 h-full w-full select-none painterly-light ${positionClass}`}
+        style={{
+          WebkitMaskImage: mask,
+          maskImage: mask,
+          mixBlendMode: "multiply",
+          opacity: baseOpacityLight,
+        }}
+      />
+    </>
   );
 }
 
