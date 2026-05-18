@@ -96,12 +96,12 @@ export function AgentTimeline({ review }: { review: ReviewState }) {
         alt=""
         aria-hidden
         loading="lazy"
-        className="iso-lineart pointer-events-none absolute right-[-40px] top-4 hidden w-[480px] max-w-[42%] select-none lg:block xl:w-[560px]"
+        className="iso-lineart pointer-events-none absolute right-[-60px] top-8 hidden w-[400px] max-w-[34%] select-none xl:block 2xl:w-[480px]"
         style={{
           WebkitMaskImage:
-            "radial-gradient(ellipse 70% 75% at 55% 50%, #000 35%, transparent 80%)",
+            "radial-gradient(ellipse 60% 70% at 60% 45%, #000 25%, transparent 72%)",
           maskImage:
-            "radial-gradient(ellipse 70% 75% at 55% 50%, #000 35%, transparent 80%)",
+            "radial-gradient(ellipse 60% 70% at 60% 45%, #000 25%, transparent 72%)",
         }}
       />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">

@@ -44,12 +44,12 @@ export function CommandCenter({
         alt=""
         aria-hidden
         loading="lazy"
-        className="iso-lineart pointer-events-none absolute right-0 top-8 hidden w-[520px] max-w-[44%] select-none lg:block xl:w-[600px]"
+        className="iso-lineart pointer-events-none absolute right-[-60px] top-12 hidden w-[440px] max-w-[36%] select-none xl:block 2xl:w-[520px]"
         style={{
           WebkitMaskImage:
-            "radial-gradient(ellipse 75% 80% at 65% 45%, #000 35%, transparent 80%)",
+            "radial-gradient(ellipse 60% 70% at 70% 45%, #000 25%, transparent 72%)",
           maskImage:
-            "radial-gradient(ellipse 75% 80% at 65% 45%, #000 35%, transparent 80%)",
+            "radial-gradient(ellipse 60% 70% at 70% 45%, #000 25%, transparent 72%)",
         }}
       />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
