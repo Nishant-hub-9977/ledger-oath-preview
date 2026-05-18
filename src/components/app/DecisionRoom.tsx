@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState, Verdict } from "@/lib/decision/types";
 
 export function DecisionRoom({ review }: { review: ReviewState }) {
