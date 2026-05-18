@@ -33,43 +33,39 @@ export function SiteHeader({
 
         {variant === "landing" ? (
           <nav className="hidden items-center gap-9 text-sm text-muted-foreground md:flex">
-            <a href="/#product" className="transition-colors hover:text-foreground">
-              Product
-            </a>
-            <a
-              href="/#decision-room-full"
-              className="transition-colors hover:text-foreground"
-            >
-              Decision Room
-            </a>
-            <a
-              href="/#audit-dossier"
-              className="transition-colors hover:text-foreground"
-            >
-              Dossier
-            </a>
-            <a
-              href="/#architecture"
-              className="transition-colors hover:text-foreground"
-            >
-              Architecture
-            </a>
+            {[
+              { href: "/#product", label: "Product" },
+              { href: "/#decision-room-full", label: "Decision Room" },
+              { href: "/#audit-dossier", label: "Dossier" },
+              { href: "/#architecture", label: "Architecture" },
+            ].map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+              >
+                {l.label}
+              </a>
+            ))}
           </nav>
         ) : variant === "app" ? (
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <Link
               to="/app"
-              activeProps={{ className: "text-foreground" }}
-              className="transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground border-b border-emerald-muted/60" }}
+              className="rounded-sm pb-0.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
             >
               Workspace
             </Link>
-            <a href="/#command-center" className="transition-colors hover:text-foreground">
+            <a
+              href="/#command-center"
+              className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+            >
               Command Center
             </a>
             <a
               href="/#audit-dossier"
-              className="transition-colors hover:text-foreground"
+              className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
             >
               Dossier
             </a>
