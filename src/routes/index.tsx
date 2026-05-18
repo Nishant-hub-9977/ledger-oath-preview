@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { AgentTimeline } from "@/components/app/AgentTimeline";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
