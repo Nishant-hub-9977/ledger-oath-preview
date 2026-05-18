@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CommandCenter } from "@/components/app/CommandCenter";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +45,7 @@ function Landing() {
       <main>
         <Hero />
         <TrustStrip />
+        <CommandCenter />
       </main>
       <Footer />
     </div>
@@ -64,7 +66,7 @@ function Header() {
           <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
         </nav>
         <a
-          href="#demo"
+          href="#command-center"
           className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
         >
           Request access
@@ -106,7 +108,7 @@ function Hero() {
 
           <div className="mt-10 flex flex-wrap items-center gap-5">
             <a
-              href="#demo"
+              href="#command-center"
               className="group inline-flex items-center gap-3 rounded-full bg-ivory px-6 py-3.5 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90"
             >
               Run Demo Review
