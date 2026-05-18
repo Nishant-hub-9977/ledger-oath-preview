@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
+import { AuditDossier } from "@/components/app/AuditDossier";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
 import { ThemeToggle } from "@/components/app/ThemeToggle";
+import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 
 export const Route = createFileRoute("/")({
@@ -61,8 +63,10 @@ function Landing() {
         />
         <DecisionRoom review={review} />
         <AgentTimeline review={review} />
+        <AuditDossier review={review} />
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 }
@@ -78,6 +82,7 @@ function Header() {
         <nav className="hidden items-center gap-10 text-sm text-muted-foreground md:flex">
           <a href="#product" className="transition-colors hover:text-foreground">Product</a>
           <a href="#decision-room-full" className="transition-colors hover:text-foreground">Decision Room</a>
+          <a href="#audit-dossier" className="transition-colors hover:text-foreground">Dossier</a>
           <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
         </nav>
         <div className="flex items-center gap-3">
