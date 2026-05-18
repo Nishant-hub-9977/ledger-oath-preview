@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
+import { AppChrome as _AppChromeUnused, DemoBadge, SiteFooter, SiteHeader } from "@/components/app/AppChrome";
 import { AuditDossier } from "@/components/app/AuditDossier";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
-import { ThemeToggle } from "@/components/app/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 
