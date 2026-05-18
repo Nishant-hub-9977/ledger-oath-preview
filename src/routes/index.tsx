@@ -80,24 +80,26 @@ function Header() {
 function Hero() {
   return (
     <section id="product" className="relative overflow-hidden">
-      <div className="mx-auto grid max-w-7xl gap-16 px-6 pb-24 pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-20 lg:px-10 lg:pb-32 lg:pt-28">
+      <CelestialBackdrop variant="observatory" />
+      <div className="relative mx-auto grid max-w-7xl gap-16 px-6 pb-24 pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-20 lg:px-10 lg:pb-32 lg:pt-28">
         <div className="flex flex-col justify-center">
           <div className="mb-8 flex flex-wrap items-center gap-2">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-ivory-muted">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-muted" />
-              Payment Governance Agent
+              Payment Governance · Observatory
             </div>
             <DemoBadge />
           </div>
 
-          <h1 className="font-display text-[2.75rem] leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-[4.25rem]">
-            Autonomous payment governance{" "}
-            <span className="italic text-ivory-muted">before money moves.</span>
+          <h1 className="font-display text-[2.75rem] leading-[1.02] tracking-tight text-foreground sm:text-6xl lg:text-[4.25rem]">
+            Governance before money moves.{" "}
+            <span className="italic text-ivory-muted">An observatory for every release.</span>
           </h1>
 
           <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            LedgerOath reviews invoices, vendor context, policy rules, budget exposure,
-            and approval risk before enterprise payments are released.
+            LedgerOath weighs invoice, vendor, policy, exposure, and approval
+            against a single horizon — so no instruction leaves the ledger
+            without provenance.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-5">
