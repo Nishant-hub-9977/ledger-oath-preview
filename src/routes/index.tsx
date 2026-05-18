@@ -72,42 +72,9 @@ function Landing() {
 }
 
 function Header() {
-  return (
-    <header className="border-b border-border/60">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-        <a href="/" className="flex items-center gap-2.5">
-          <Mark />
-          <span className="font-display text-xl tracking-tight">LedgerOath</span>
-        </a>
-        <nav className="hidden items-center gap-10 text-sm text-muted-foreground md:flex">
-          <a href="#product" className="transition-colors hover:text-foreground">Product</a>
-          <a href="#decision-room-full" className="transition-colors hover:text-foreground">Decision Room</a>
-          <a href="#audit-dossier" className="transition-colors hover:text-foreground">Dossier</a>
-          <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
-        </nav>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <a
-            href="#command-center"
-            className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
-          >
-            Request access
-          </a>
-        </div>
-      </div>
-    </header>
-  );
+  return <SiteHeader variant="landing" />;
 }
 
-function Mark() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="10" stroke="currentColor" strokeOpacity="0.45" />
-      <path d="M11 3v16M3 11h16" stroke="currentColor" strokeOpacity="0.6" strokeWidth="0.75" />
-      <circle cx="11" cy="11" r="2.2" fill="var(--emerald-muted)" />
-    </svg>
-  );
-}
 
 function Hero() {
   return (
