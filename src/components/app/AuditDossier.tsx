@@ -172,16 +172,16 @@ function Dossier({ v }: { v: Verdict }) {
           <p className="mt-6 font-display text-2xl leading-snug text-foreground sm:text-3xl">
             {summary}
           </p>
-          <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-border pt-5">
+          <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-border pt-5">
             <ActionButton onClick={() => copy(summary, "Summary")}>
               Copy summary
             </ActionButton>
-            <ActionButton onClick={exportMarkdown} variant="ghost">
+            <ActionButton onClick={exportMarkdown}>
               Export markdown
             </ActionButton>
-            <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-amber-restrained/30 bg-amber-restrained/5 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-restrained">
+            <span className="ml-auto inline-flex items-center gap-2 rounded-full border border-amber-restrained/40 bg-amber-restrained/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-restrained">
               <span className="h-1 w-1 rounded-full bg-amber-restrained" />
-              SIMULATED ONLY
+              SIMULATED ONLY · No real payment executed
             </span>
           </div>
         </Tile>
