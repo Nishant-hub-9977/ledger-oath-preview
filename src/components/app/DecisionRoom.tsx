@@ -40,9 +40,9 @@ function SectionLabel() {
           <span className="h-px w-8 bg-border" />
           Decision Room
         </div>
-        <h2 className="mt-6 font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+        <h2 className="mt-6 font-display text-4xl leading-[1.02] tracking-tight sm:text-5xl">
           The verdict console.{" "}
-          <span className="italic text-ivory-muted">Every reason, on the record.</span>
+          <span className="italic text-ivory-muted">Every signal. Every reason. On the record.</span>
         </h2>
       </div>
       <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
