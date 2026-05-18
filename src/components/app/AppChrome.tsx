@@ -105,14 +105,14 @@ export function SiteHeader({
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border">
-      <div className="mx-auto grid max-w-7xl gap-4 px-6 py-8 text-[11px] text-ivory-muted/70 sm:grid-cols-3 sm:items-center lg:px-10">
+    <footer className="border-t border-border/80 bg-secondary/20">
+      <div className="mx-auto grid max-w-7xl gap-4 px-6 py-9 text-xs text-muted-foreground sm:grid-cols-3 sm:items-center lg:px-10">
         <div className="flex items-center gap-2.5 justify-self-start">
           <Mark />
           <span className="font-display text-base text-foreground">LedgerOath</span>
-          <span className="ml-2">© {new Date().getFullYear()}</span>
+          <span className="ml-2 text-ivory-muted">© {new Date().getFullYear()}</span>
         </div>
-        <div className="text-center font-mono uppercase tracking-[0.2em]">
+        <div className="text-center font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/80">
           Built for enterprise finance · Simulated environment
         </div>
         <a
@@ -121,7 +121,7 @@ export function SiteFooter() {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          className="justify-self-end rounded-full border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
+          className="justify-self-end rounded-full border border-border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/80 transition-colors duration-200 hover:border-ivory/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
         >
           Back to top ↑
         </a>
