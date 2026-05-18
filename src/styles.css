@@ -53,12 +53,13 @@
   --navy-deep: oklch(0.18 0.03 250);
   --navy: oklch(0.24 0.035 250);
   --graphite: oklch(0.32 0.012 250);
-  --ivory: oklch(0.955 0.012 85);
-  --ivory-muted: oklch(0.78 0.015 85);
-  --emerald-muted: oklch(0.62 0.08 165);
-  --amber-restrained: oklch(0.78 0.10 75);
-  --danger-red: oklch(0.62 0.16 25);
-  --hairline: oklch(1 0 0 / 8%);
+  --ivory: oklch(0.96 0.012 85);
+  /* +10–15% contrast bump for secondary text in dark mode */
+  --ivory-muted: oklch(0.86 0.015 85);
+  --emerald-muted: oklch(0.66 0.085 165);
+  --amber-restrained: oklch(0.80 0.105 75);
+  --danger-red: oklch(0.64 0.165 25);
+  --hairline: oklch(1 0 0 / 12%);
 
   --background: var(--navy-deep);
   --foreground: var(--ivory);
