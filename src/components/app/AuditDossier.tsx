@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState, Verdict } from "@/lib/decision/types";
+import { recordExport } from "@/lib/decision/persist";
 
-export function AuditDossier({ review }: { review: ReviewState }) {
+export function AuditDossier({
+  review,
+  dbId,
+}: {
+  review: ReviewState;
+  dbId?: string;
+}) {
   const ref = useRef<HTMLElement | null>(null);
   const isDone = review.status === "done";
   const verdict = isDone ? review.verdict : null;
@@ -27,7 +34,7 @@ export function AuditDossier({ review }: { review: ReviewState }) {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-celestial-teal/30 to-transparent" />
       <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-10 lg:py-32">
         <SectionLabel />
-        {verdict ? <Dossier v={verdict} /> : <Awaiting />}
+        {verdict ? <Dossier v={verdict} dbId={dbId} /> : <Awaiting />}
       </div>
     </section>
   );
@@ -125,16 +132,21 @@ ${actions}
 `;
 }
 
-function Dossier({ v }: { v: Verdict }) {
+function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
   const summary = buildSummary(v);
   const json = JSON.stringify(v, null, 2);
   const markdown = buildMarkdown(v, summary);
   const [jsonOpen, setJsonOpen] = useState(false);
 
-  async function copy(text: string, label: string) {
+  const logExport = (kind: "summary" | "json" | "markdown") => {
+    if (dbId) void recordExport({ paymentReviewDbId: dbId, exportType: kind });
+  };
+
+  async function copy(text: string, label: string, kind: "summary" | "json") {
     try {
       await navigator.clipboard.writeText(text);
       toast.success(`${label} copied`);
+      logExport(kind);
     } catch {
       toast.error(`Couldn't copy ${label.toLowerCase()}`);
     }
@@ -152,9 +164,13 @@ function Dossier({ v }: { v: Verdict }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       toast.success("Markdown downloaded");
+      logExport("markdown");
     } catch {
       navigator.clipboard.writeText(markdown).then(
-        () => toast.success("Markdown copied to clipboard"),
+        () => {
+          toast.success("Markdown copied to clipboard");
+          logExport("markdown");
+        },
         () => toast.error("Couldn't export markdown"),
       );
     }
@@ -175,7 +191,7 @@ function Dossier({ v }: { v: Verdict }) {
             {summary}
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-border pt-5">
-            <ActionButton onClick={() => copy(summary, "Summary")}>
+            <ActionButton onClick={() => copy(summary, "Summary", "summary")}>
               Copy summary
             </ActionButton>
             <ActionButton onClick={exportMarkdown}>
@@ -319,7 +335,7 @@ function Dossier({ v }: { v: Verdict }) {
               <ActionButton onClick={() => setJsonOpen((o) => !o)}>
                 {jsonOpen ? "Hide JSON" : "Show JSON"}
               </ActionButton>
-              <ActionButton onClick={() => copy(json, "JSON")}>Copy JSON</ActionButton>
+              <ActionButton onClick={() => copy(json, "JSON", "json")}>Copy JSON</ActionButton>
             </div>
           </div>
           {jsonOpen ? (
@@ -328,7 +344,7 @@ function Dossier({ v }: { v: Verdict }) {
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted">
                   dossier.json · {v.reviewId}
                 </span>
-                <ActionButton onClick={() => copy(json, "JSON")}>Copy</ActionButton>
+                <ActionButton onClick={() => copy(json, "JSON", "json")}>Copy</ActionButton>
               </div>
               <pre className="max-h-[420px] overflow-auto p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
                 {json}

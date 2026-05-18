@@ -1,73 +1,59 @@
-## Goal
+# LedgerOath Phase 2 — finish the backend wiring
 
-Bring the second aesthetic — **isometric technical line illustrations** (stacked UI planes, dashed grids, constellation graphs) — into LedgerOath as foreground decorative artwork, while the Renaissance painterly backdrops keep doing their atmospheric job underneath.
+Goal: make the existing UI fully functional against Lovable Cloud while preserving the celestial editorial design, dark/light mode, and the public demo flow. No redesign, no new screens.
 
-The two aesthetics complement each other perfectly:
-- **Painterly backdrops** = soul, gravitas, "celestial governance" mood.
-- **Isometric lineart** = mind, system, "this is engineered" signal.
+## 1. Auth-aware header (`AppChrome.tsx`)
+- Read `useAuth()` once in `SiteHeader`.
+- Signed-out: keep current "Sign in / Get access" links unchanged.
+- Signed-in: replace those links with a small workspace badge (email initial + first name or email) and a "Sign out" mono link that calls `signOut()` then navigates to `/`.
+- No new components, no popovers — inline only, same typography tokens.
 
-## Strategy (credit-efficient)
+## 2. CommandCenter → live analysis + save (`CommandCenter.tsx`)
+- Replace the 1-second timeout in `runReview` with:
+  1. `setReview({ status: "loading" })`
+  2. Call `analyzePaymentReview({ data: { fields } })` server fn.
+  3. Convert canonical → legacy via `toLegacyVerdict` for the existing dossier UI.
+  4. `setReview({ status: "done", verdict })`.
+- If `useAuth().user` exists: in background (non-blocking), `saveReview(...)`, then if the upload Dropzone has a staged file, `uploadInvoiceFile(...)`. Toast on success/failure; never block the verdict from rendering.
+- If signed-out (public demo): skip persist + upload entirely. Result still renders — preserves hackathon demo reliability.
+- Wire the existing Dropzone to a local `useState<File | null>` (it's currently visual-only).
+- Keep the deterministic fallback already inside `analyzePaymentReview`; no client-side change needed for "Gemini missing" — it returns canonical either way.
 
-Generate **2 transparent-PNG line illustrations** at standard quality, then drop each into one carefully chosen section. CSS handles theme inversion (black ink on ivory → ivory ink on navy) so one asset works in both modes.
+## 3. Workspace page → real data (`routes/app.tsx`)
+- Gate with `beforeLoad`: if no `supabase.auth.getUser()`, `redirect({ to: "/login" })`.
+- Replace the hardcoded `RECENT_REVIEWS` constant with `listMyReviews(10)` invoked inside a `useEffect` + `useState` (keep it client-side to avoid loader/SSR auth race; the route is already gated).
+- Empty state: "No reviews yet. Run the Northline demo to create your first dossier." + link to `/#command-center`.
+- Each row gets a "View" link that navigates to `/#audit-dossier` with the saved `result_json` rehydrated through a tiny shared store (sessionStorage key `lo:viewReview`). Landing page reads it on mount once and replaces the dossier's verdict.
+- Workspace bar: swap "Demo Operator" for the signed-in user's email (from `useAuth`).
 
-### The 2 illustrations
+## 4. Export tracking (`AuditDossier.tsx`)
+- Pass an optional `dbId?: string` prop down from landing (only set when a saved review is loaded).
+- In the `copy()` and `download` handlers, when `dbId` is set, call `recordExport({ paymentReviewDbId: dbId, exportType: "summary" | "json" | "markdown" })`. Fire-and-forget; ignore errors.
+- No UI change.
 
-1. **`iso-stack.png`** — isometric stack of UI/browser planes (matches uploaded image #4): floating windows, a password field, wires connecting to a central glowing node, dashed grid floor. Pure black lineart on transparent.
-   → Placed in **Command Center** as a right-side hero illustration. Reinforces "this is where you wire up the review."
+## 5. Landing wiring (`routes/index.tsx`)
+- On mount, read `sessionStorage.getItem("lo:viewReview")`. If present, parse, hydrate `review` state with `toLegacyVerdict(parsed)`, remember `dbId`, clear the key, and scroll to `#audit-dossier`.
+- Pass `dbId` into `<AuditDossier />`.
 
-2. **`iso-network.png`** — isometric translucent plane with a constellation/network graph of nodes and edges floating above a faint UI plane (matches uploaded image #5). Pure black lineart on transparent.
-   → Placed in **Agent Timeline (Star Chart)** as a header illustration. Reinforces the multi-agent topology.
+## 6. No other changes
+- Do not touch the celestial backdrop, isometric line art, typography, color tokens, theme toggle, or any motion code.
+- Do not add real payments. Do not add new tables or migrations — schema is complete.
+- Do not expose `LOVABLE_API_KEY`; it's only read inside `analyzePaymentReview.handler`.
 
-Both are transparent PNGs so the painterly backdrop and SVG linework continue to show through where the illustration's negative space falls.
+## Technical notes
+- All persistence is via existing helpers in `src/lib/decision/persist.ts` (no new file).
+- `analyzePaymentReview` is already protected with `requireSupabaseAuth` only for the live Gemini path? Re-check: it must work for signed-out demo users too. If currently middleware-gated, split: the public demo path calls a pure client helper that returns `toCanonical(NORTHLINE_CANONICAL)` — no server round-trip, zero credits. Signed-in users hit the server fn for live analysis.
+- This keeps credit usage at zero for the public demo and one Gemini call per signed-in real review.
+- File upload validates type (PDF/PNG/JPG) and 10 MB cap inside `uploadInvoiceFile` already.
 
-## Implementation
-
-### 1. Generate assets (2 parallel calls, standard quality)
-- `src/assets/atmos/iso-stack.png` (1536×1024, transparent)
-- `src/assets/atmos/iso-network.png` (1536×1024, transparent)
-
-Prompts: "isometric technical line illustration, thin black ink on transparent background, dashed perspective grid floor, no color, no text, editorial blueprint style" — variant 1 stacks browser/auth windows + central node; variant 2 shows a node-edge constellation on a translucent plane.
-
-### 2. Add a single theme-aware utility in `styles.css`
-```css
-.iso-lineart { opacity: 0.85; }
-.dark .iso-lineart, html:not(.light) .iso-lineart { filter: invert(1) brightness(1.05); opacity: 0.55; }
+## Files touched (6)
 ```
-This is the only CSS needed — one rule, both themes covered.
+src/components/app/AppChrome.tsx
+src/components/app/CommandCenter.tsx
+src/components/app/AuditDossier.tsx
+src/routes/app.tsx
+src/routes/index.tsx
+src/lib/decision/analyze.functions.ts   (only if auth-gating needs to be relaxed)
+```
 
-### 3. Place in 2 sections (one `<img>` each, no new components)
-
-**`src/components/app/CommandCenter.tsx`**
-- Wrap the existing header/intro row in a relative container and add `iso-stack.png` as an absolutely-positioned decorative `<img>` on the right side at a contained size (e.g. `max-w-[480px]`, `right-0`, `top-0`, `hidden lg:block`, `iso-lineart`, `aria-hidden`, `loading="lazy"`).
-- Existing form/content keeps its current grid; the illustration sits behind it via `-z-0` so nothing interactive is blocked.
-
-**`src/components/app/AgentTimeline.tsx`**
-- Same pattern: add `iso-network.png` as a decorative absolutely-positioned `<img>` near the section header (top-right, `hidden lg:block`, `max-w-[420px]`, `iso-lineart`).
-
-No layout changes, no flow changes, no copy changes.
-
-### 4. Readability guards
-- `hidden lg:block` keeps them off mobile/tablet where space is tight.
-- `pointer-events-none` + `aria-hidden` on both.
-- `-z-0` behind cards but above the celestial backdrop layer.
-- Opacity caps (0.55 dark / 0.85 light) prevent the lineart from competing with text.
-
-## Files touched
-- **New**: `src/assets/atmos/iso-stack.png`, `src/assets/atmos/iso-network.png`
-- **Edit**: `src/styles.css` (one utility class)
-- **Edit**: `src/components/app/CommandCenter.tsx` (one `<img>`)
-- **Edit**: `src/components/app/AgentTimeline.tsx` (one `<img>`)
-
-**Total: 2 image generations + 3 small edits.**
-
-## What you'll see
-- Command Center: faint isometric stack of UI panes on the right, behind your inputs, sitting on the painterly fresco haze.
-- Agent Timeline: faint isometric network/constellation in the top-right of the section header, hovering above the aurora backdrop.
-- Both flip from black ink (light mode) to ivory ink (dark mode) automatically.
-- Everything else — flows, copy, painterly backdrops — untouched.
-
-## Risks / mitigations
-- **Visual clutter** → opacity caps + `hidden lg:block` + restricted to 2 sections only.
-- **Generated lineart looking messy** → standard quality + transparent PNG + the existing layers will mask imperfections.
-
-Approve and I'll execute.
+End state: signed-out visitors get the instant deterministic demo; signed-in operators get live analysis, persisted reviews, file uploads, real recent-reviews list, viewable past dossiers, and audit-export logging — all on the existing UI.

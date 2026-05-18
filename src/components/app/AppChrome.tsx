@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Mark() {
   return (
@@ -21,6 +22,17 @@ export function SiteHeader({
 }: {
   variant?: "landing" | "auth" | "app";
 }) {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/" });
+  };
+
+  const userLabel = user?.email ?? "";
+  const initial = userLabel ? userLabel[0]?.toUpperCase() : "";
+
   return (
     <header className="border-b border-border/60">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
@@ -76,28 +88,69 @@ export function SiteHeader({
           <div className="border-r border-border pr-4">
             <ThemeToggle />
           </div>
-          {variant !== "auth" ? (
-            <Link
-              to="/login"
-              className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline"
-            >
-              Sign in
-            </Link>
-          ) : null}
-          {variant === "app" ? (
-            <Link
-              to="/"
-              className="rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground"
-            >
-              Back to landing
-            </Link>
+
+          {user ? (
+            <>
+              <span
+                className="hidden items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ivory-muted md:inline-flex"
+                title={userLabel}
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-secondary/40 text-[10px] text-foreground">
+                  {initial}
+                </span>
+                <span className="max-w-[180px] truncate normal-case tracking-normal">
+                  {userLabel}
+                </span>
+              </span>
+              {variant === "app" ? (
+                <Link
+                  to="/"
+                  className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
+                >
+                  Landing
+                </Link>
+              ) : (
+                <Link
+                  to="/app"
+                  className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
+                >
+                  Workspace
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline"
+              >
+                Sign out
+              </button>
+            </>
           ) : (
-            <Link
-              to="/signup"
-              className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
-            >
-              Request access
-            </Link>
+            <>
+              {variant !== "auth" ? (
+                <Link
+                  to="/login"
+                  className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline"
+                >
+                  Sign in
+                </Link>
+              ) : null}
+              {variant === "app" ? (
+                <Link
+                  to="/"
+                  className="rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground"
+                >
+                  Back to landing
+                </Link>
+              ) : (
+                <Link
+                  to="/signup"
+                  className="hidden rounded-full border border-border px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory-muted transition-colors hover:border-ivory/40 hover:text-foreground md:inline-flex"
+                >
+                  Request access
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>

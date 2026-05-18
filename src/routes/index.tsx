@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AgentTimeline } from "@/components/app/AgentTimeline";
 import { DemoBadge, Mark, SiteFooter, SiteHeader } from "@/components/app/AppChrome";
@@ -8,6 +8,7 @@ import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
 import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
+import { toLegacyVerdict, type CanonicalReview } from "@/lib/decision/canonical";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +50,27 @@ const trustItems = [
 function Landing() {
   const [fields, setFields] = useState<CaseFields>(EMPTY_CASE);
   const [review, setReview] = useState<ReviewState>({ status: "idle" });
+  const [viewDbId, setViewDbId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const raw = window.sessionStorage.getItem("lo:viewReview");
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as { dbId: string; result: CanonicalReview };
+      setReview({ status: "done", verdict: toLegacyVerdict(parsed.result) });
+      setViewDbId(parsed.dbId);
+      window.sessionStorage.removeItem("lo:viewReview");
+      window.setTimeout(() => {
+        document
+          .getElementById("audit-dossier")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    } catch (err) {
+      console.warn("[viewReview hydrate]", err);
+      window.sessionStorage.removeItem("lo:viewReview");
+    }
+  }, []);
 
   return (
     <div id="top" className="celestial-shell min-h-screen bg-background text-foreground grain">
@@ -64,7 +86,7 @@ function Landing() {
         />
         <DecisionRoom review={review} />
         <AgentTimeline review={review} />
-        <AuditDossier review={review} />
+        <AuditDossier review={review} dbId={viewDbId} />
       </main>
       <Footer />
       <Toaster />
