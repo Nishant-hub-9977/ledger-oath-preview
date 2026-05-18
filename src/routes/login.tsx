@@ -77,9 +77,14 @@ function SignInCard() {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    toast.success("Auth is ready for Lovable Cloud / Supabase connection.");
+    if (error) {
+      toast.error(error.message || "Sign in failed");
+      return;
+    }
+    toast.success("Signed in.");
     navigate({ to: "/app" });
   }
 

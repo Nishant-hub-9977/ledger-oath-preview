@@ -108,11 +108,26 @@ function SignupCard() {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1100));
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/app`,
+        data: {
+          full_name: fullName,
+          company,
+          role,
+          intended_use_case: useCase,
+        },
+      },
+    });
     setLoading(false);
-    toast.success(
-      "Workspace request captured for demo. Connect Lovable Cloud / Supabase Auth in the backend phase.",
-    );
+    if (error) {
+      toast.error(error.message || "Signup failed");
+      return;
+    }
+    toast.success("Account created. Workspace ready.");
     navigate({ to: "/app" });
   }
 
