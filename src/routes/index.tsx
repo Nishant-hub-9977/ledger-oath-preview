@@ -59,6 +59,7 @@ function Landing() {
           setReview={setReview}
         />
         <DecisionRoom review={review} />
+        <AgentTimeline review={review} />
       </main>
       <Footer />
     </div>
