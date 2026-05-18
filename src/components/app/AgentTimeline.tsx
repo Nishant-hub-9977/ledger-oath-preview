@@ -138,8 +138,8 @@ function AwaitingPlaceholder() {
 function TimelineCards() {
   return (
     <div className="relative">
-      {/* Connecting line */}
-      <div className="absolute left-[18px] top-0 hidden h-full w-px border-l border-dashed border-border lg:left-[23px] lg:block" />
+      {/* Connecting line — centered on the step circles (w-10 → 20px) */}
+      <div className="absolute left-[20px] top-0 hidden h-full w-px border-l border-dashed border-border lg:block" />
 
       <div className="space-y-6">
         {AGENTS.map((agent, i) => (
@@ -153,9 +153,9 @@ function TimelineCards() {
 function AgentCard({ index, agent }: { index: number; agent: AgentEntry }) {
   return (
     <div className="relative flex gap-5 lg:gap-8">
-      {/* Step indicator */}
+      {/* Step indicator — uniform across breakpoints */}
       <div className="relative z-10 flex shrink-0 flex-col items-center">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background font-mono text-[10px] uppercase tracking-[0.16em] text-ivory-muted lg:h-12 lg:w-12 lg:text-xs">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background font-mono text-[11px] uppercase tracking-[0.16em] text-ivory-muted">
           {String(index).padStart(2, "0")}
         </div>
       </div>
