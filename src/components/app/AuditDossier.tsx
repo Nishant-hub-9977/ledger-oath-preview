@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import type { ReviewState, Verdict } from "@/lib/decision/types";
 
 export function AuditDossier({ review }: { review: ReviewState }) {
