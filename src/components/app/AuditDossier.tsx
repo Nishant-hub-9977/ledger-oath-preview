@@ -164,9 +164,13 @@ function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       toast.success("Markdown downloaded");
+      logExport("markdown");
     } catch {
       navigator.clipboard.writeText(markdown).then(
-        () => toast.success("Markdown copied to clipboard"),
+        () => {
+          toast.success("Markdown copied to clipboard");
+          logExport("markdown");
+        },
         () => toast.error("Couldn't export markdown"),
       );
     }
@@ -187,7 +191,7 @@ function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
             {summary}
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-border pt-5">
-            <ActionButton onClick={() => copy(summary, "Summary")}>
+            <ActionButton onClick={() => copy(summary, "Summary", "summary")}>
               Copy summary
             </ActionButton>
             <ActionButton onClick={exportMarkdown}>
@@ -331,7 +335,7 @@ function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
               <ActionButton onClick={() => setJsonOpen((o) => !o)}>
                 {jsonOpen ? "Hide JSON" : "Show JSON"}
               </ActionButton>
-              <ActionButton onClick={() => copy(json, "JSON")}>Copy JSON</ActionButton>
+              <ActionButton onClick={() => copy(json, "JSON", "json")}>Copy JSON</ActionButton>
             </div>
           </div>
           {jsonOpen ? (
@@ -340,7 +344,7 @@ function Dossier({ v, dbId }: { v: Verdict; dbId?: string }) {
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ivory-muted">
                   dossier.json · {v.reviewId}
                 </span>
-                <ActionButton onClick={() => copy(json, "JSON")}>Copy</ActionButton>
+                <ActionButton onClick={() => copy(json, "JSON", "json")}>Copy</ActionButton>
               </div>
               <pre className="max-h-[420px] overflow-auto p-5 font-mono text-[12px] leading-relaxed text-foreground/90">
                 {json}
