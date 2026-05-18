@@ -92,8 +92,8 @@
    so existing components flip without rewrites. */
 .light {
   /* Parchment-warm ivory base, deep navy ink */
-  --ivory: oklch(0.24 0.04 250);          /* now: navy ink (text "ivory" becomes ink) */
-  --ivory-muted: oklch(0.46 0.025 250);   /* now: graphite secondary */
+  --ivory: oklch(0.22 0.04 250);          /* now: navy ink (text "ivory" becomes ink) */
+  --ivory-muted: oklch(0.40 0.025 250);   /* now: graphite secondary, stronger contrast */
   --navy-deep: oklch(0.975 0.012 85);     /* now: warm parchment (bg) */
   --navy: oklch(0.96 0.014 85);           /* now: elevated parchment */
   --graphite: oklch(0.55 0.015 250);
