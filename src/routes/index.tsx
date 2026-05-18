@@ -236,18 +236,6 @@ function TrustStrip() {
 }
 
 function Footer() {
-  return (
-    <footer className="border-t border-border">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-8 text-xs text-ivory-muted/70 sm:flex-row sm:items-center sm:justify-between lg:px-10">
-        <div className="flex items-center gap-2.5">
-          <Mark />
-          <span className="font-display text-base text-foreground">LedgerOath</span>
-          <span className="ml-2">© {new Date().getFullYear()}</span>
-        </div>
-        <div className="font-mono uppercase tracking-[0.2em]">
-          Built for enterprise finance · Simulated environment
-        </div>
-      </div>
-    </footer>
-  );
+  return <SiteFooter />;
 }
+
