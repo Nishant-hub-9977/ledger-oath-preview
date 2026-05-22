@@ -100,6 +100,7 @@ function Verdict({ view }: { view: Verdict }) {
 }
 
 function VerdictHeader({ v }: { v: Verdict }) {
+  const { user } = useAuth();
   return (
     <div className="rounded-2xl border border-border bg-card/60 p-8 backdrop-blur-sm">
       <div className="flex flex-wrap items-start justify-between gap-6">
@@ -149,6 +150,15 @@ function VerdictHeader({ v }: { v: Verdict }) {
           Simulated payment instruction only. No real payment has been executed.
         </span>
       </div>
+
+      {!user ? (
+        <div className="mt-4 rounded-lg border border-ivory-muted/15 bg-secondary/30 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+          This verdict is deterministic — the same reference case, the same result.
+          When you sign in, LedgerOath runs a live governance review against your
+          actual invoice, vendor, and policy data, then saves the dossier to your
+          workspace.
+        </div>
+      ) : null}
     </div>
   );
 }
