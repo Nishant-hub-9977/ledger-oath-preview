@@ -65,7 +65,7 @@ export function CommandCenter({
         });
         if (!up.ok && up.error) toast.error(`Upload: ${up.error}`);
       }
-      toast.success("Review saved to your workspace");
+      toast.success("Review saved and dossier created in your workspace.");
     } catch (err) {
       console.error("[persist]", err);
     }
