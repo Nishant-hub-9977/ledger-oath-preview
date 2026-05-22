@@ -137,6 +137,7 @@ export function CommandCenter({
         document
           .getElementById("command-center")
           ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        caseNameRef.current?.focus();
       }, 50);
     };
     window.addEventListener("lo:runDemo", handler);
