@@ -174,7 +174,7 @@ export function CommandCenter({
               subtitle="Identity of the payment under review"
             >
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextField label="Case name" value={fields.caseName} onChange={(v) => update("caseName", v)} placeholder="VENDOR_CASE.json" mono />
+                <TextField label="Case name" value={fields.caseName} onChange={(v) => update("caseName", v)} placeholder="VENDOR_CASE.json" mono inputRef={caseNameRef} />
                 <TextField label="Review ID" value={fields.reviewId} onChange={(v) => update("reviewId", v)} placeholder="LO-2026-000" mono />
                 <TextField label="Vendor" value={fields.vendor} onChange={(v) => update("vendor", v)} placeholder="Legal entity name" />
                 <TextField label="Invoice amount" value={fields.invoiceAmount} onChange={(v) => update("invoiceAmount", v)} placeholder="₹0,00,000" mono />
@@ -284,12 +284,14 @@ function TextField({
   onChange,
   placeholder,
   mono,
+  inputRef,
 }: {
   label?: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   mono?: boolean;
+  inputRef?: React.Ref<HTMLInputElement>;
 }) {
   return (
     <label className="block">
@@ -299,6 +301,7 @@ function TextField({
         </span>
       ) : null}
       <input
+        ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
