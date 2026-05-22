@@ -270,6 +270,17 @@ export const analyzePaymentReview = createServerFn({ method: "POST" })
       };
     }
 
+    // Live AI calls require a signed-in user — prevents anonymous credit drain.
+    try {
+      await requireAuthenticatedCaller();
+    } catch {
+      return {
+        result: safetySeal(NORTHLINE_CANONICAL),
+        source: "fallback",
+        note: "Sign in to run a live governance review. Showing the deterministic Northline reference case.",
+      };
+    }
+
     const live = await callLovableGateway(data);
     if (live) return { result: safetySeal(live), source: "live" };
 
