@@ -30,6 +30,7 @@ export function CommandCenter({
 }) {
   const { user } = useAuth();
   const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const caseNameRef = useRef<HTMLInputElement>(null);
   const analyze = useServerFn(analyzePaymentReview);
 
   const update = <K extends keyof CaseFields>(key: K, value: CaseFields[K]) =>
