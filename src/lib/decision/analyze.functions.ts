@@ -1,6 +1,51 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { NORTHLINE_CANONICAL, type CanonicalReview } from "./canonical";
+
+/**
+ * Verifies that the incoming request carries a valid Supabase bearer token.
+ * Used only for the "live" AI path so unauthenticated callers cannot drain
+ * AI credits via direct HTTP POSTs. The deterministic demo path is exempt.
+ */
+async function requireAuthenticatedCaller(): Promise<string> {
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error("Server is not configured for authenticated AI calls.");
+  }
+  const req = getRequest();
+  const authHeader = req?.headers?.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new Error("Sign in required to run a live governance review.");
+  }
+  const token = authHeader.slice(7).trim();
+  if (!token) {
+    throw new Error("Sign in required to run a live governance review.");
+  }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
+  });
+  const { data, error } = await supabase.auth.getClaims(token);
+  if (error || !data?.claims?.sub) {
+    throw new Error("Sign in required to run a live governance review.");
+  }
+  return data.claims.sub as string;
+}
+
+/**
+ * Strips delimiter sequences that an attacker might use to break out of the
+ * untrusted-data container in the prompt. Keeps content readable for the LLM
+ * while neutralising the most common prompt-injection vectors.
+ */
+function sanitizeUntrusted(value: string): string {
+  if (!value) return "";
+  return value
+    .replace(/<\/?untrusted[^>]*>/gi, "")
+    .replace(/```/g, "ʼʼʼ")
+    .slice(0, 20000);
+}
 
 const inputSchema = z.object({
   caseName: z.string().max(500).optional().default(""),
