@@ -248,45 +248,52 @@ async function callLovableGateway(
   }
 }
 
-export const analyzePaymentReview = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => inputSchema.parse(input))
-  .handler(async ({ data }): Promise<AnalyzeResult> => {
-    // Force deterministic fallback (judge demo path)
-    if (data.useDemoFallback) {
-      return { result: safetySeal(NORTHLINE_CANONICAL), source: "fallback" };
-    }
+/**
+ * Pure handler — exported for integration tests. The serverFn below is just
+ * a transport wrapper around this.
+ */
+export async function runAnalyze(data: AnalyzeInput): Promise<AnalyzeResult> {
+  // Force deterministic fallback (judge demo path)
+  if (data.useDemoFallback) {
+    return { result: safetySeal(NORTHLINE_CANONICAL), source: "fallback" };
+  }
 
-    const hasInputs =
-      data.invoiceText.trim() ||
-      data.vendorMasterData.trim() ||
-      data.governancePolicyModel.trim();
+  const hasInputs =
+    data.invoiceText.trim() ||
+    data.vendorMasterData.trim() ||
+    data.governancePolicyModel.trim();
 
-    // No keys → fallback; also if user provided no inputs we use canonical too.
-    if (!hasInputs) {
-      return {
-        result: safetySeal(NORTHLINE_CANONICAL),
-        source: "fallback",
-        note: "No inputs provided — used Northline reference case.",
-      };
-    }
-
-    // Live AI calls require a signed-in user — prevents anonymous credit drain.
-    try {
-      await requireAuthenticatedCaller();
-    } catch {
-      return {
-        result: safetySeal(NORTHLINE_CANONICAL),
-        source: "fallback",
-        note: "Sign in to run a live governance review. Showing the deterministic Northline reference case.",
-      };
-    }
-
-    const live = await callLovableGateway(data);
-    if (live) return { result: safetySeal(live), source: "live" };
-
+  // No keys → fallback; also if user provided no inputs we use canonical too.
+  if (!hasInputs) {
     return {
       result: safetySeal(NORTHLINE_CANONICAL),
       source: "fallback",
-      note: "Live analysis unavailable. Demo fallback used.",
+      note: "No inputs provided — used Northline reference case.",
     };
-  });
+  }
+
+  // Live AI calls require a signed-in user — prevents anonymous credit drain.
+  try {
+    await requireAuthenticatedCaller();
+  } catch {
+    return {
+      result: safetySeal(NORTHLINE_CANONICAL),
+      source: "fallback",
+      note: "Sign in to run a live governance review. Showing the deterministic Northline reference case.",
+    };
+  }
+
+  const live = await callLovableGateway(data);
+  if (live) return { result: safetySeal(live), source: "live" };
+
+  return {
+    result: safetySeal(NORTHLINE_CANONICAL),
+    source: "fallback",
+    note: "Live analysis unavailable. Demo fallback used.",
+  };
+}
+
+export const analyzePaymentReview = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => inputSchema.parse(input))
+  .handler(async ({ data }): Promise<AnalyzeResult> => runAnalyze(data));
+
