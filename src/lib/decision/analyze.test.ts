@@ -53,7 +53,7 @@ describe("runAnalyze — auth-gated AI path", () => {
     delete process.env.GEMINI_API_KEY;
     mockGetRequest.mockReset();
     mockGetClaims.mockReset();
-    vi.spyOn(globalThis, "fetch" as never).mockReset?.();
+    vi.restoreAllMocks();
   });
 
   afterEach(() => {
