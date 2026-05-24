@@ -25,7 +25,8 @@ vi.mock("@supabase/supabase-js", () => ({
   }),
 }));
 
-import { runAnalyze, type AnalyzeInput } from "./analyze.functions";
+import { runAnalyze } from "./analyze.server";
+import type { AnalyzeInput } from "./analyze.shared";
 import { NORTHLINE_CANONICAL } from "./canonical";
 
 const baseInput: AnalyzeInput = {
