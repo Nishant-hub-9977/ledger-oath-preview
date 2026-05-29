@@ -6,6 +6,7 @@ import { AuditDossier } from "@/components/app/AuditDossier";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
+import { DemoReviewModal } from "@/components/app/DemoReviewModal";
 import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 import { toLegacyVerdict, type CanonicalReview } from "@/lib/decision/canonical";
