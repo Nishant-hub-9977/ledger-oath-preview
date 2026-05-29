@@ -39,6 +39,23 @@ export function CommandCenter({
 }) {
   const { user } = useAuth();
   const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const [language, setLanguage] = useState<LanguageCode>("en");
+  const [region, setRegion] = useState<RegionCode>("IN");
+  const [currency, setCurrency] = useState<CurrencyCode>("INR");
+  const caseNameRef = useRef<HTMLInputElement>(null);
+  const analyze = useServerFn(analyzePaymentReview);
+
+  const applyRegionPreset = (next: RegionCode) => {
+    setRegion(next);
+    const preset = REGION_PRESETS[next];
+    setCurrency(preset.currency);
+    setFields((f) => ({
+      ...f,
+      policyModel: preset.policy,
+      routing: preset.routing,
+    }));
+    toast.success(`Loaded ${preset.label} preset`);
+  };
   const caseNameRef = useRef<HTMLInputElement>(null);
   const analyze = useServerFn(analyzePaymentReview);
 
