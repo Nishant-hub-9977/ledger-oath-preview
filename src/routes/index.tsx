@@ -52,6 +52,7 @@ function Landing() {
   const [fields, setFields] = useState<CaseFields>(EMPTY_CASE);
   const [review, setReview] = useState<ReviewState>({ status: "idle" });
   const [viewDbId, setViewDbId] = useState<string | undefined>(undefined);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -73,11 +74,17 @@ function Landing() {
     }
   }, []);
 
+  const proceedWithDemo = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("lo:runDemo"));
+    }
+  };
+
   return (
     <div id="top" className="celestial-shell min-h-screen bg-background text-foreground grain">
       <Header />
       <main>
-        <Hero />
+        <Hero onRunDemo={() => setDemoModalOpen(true)} />
         <TrustStrip />
         <CommandCenter
           fields={fields}
@@ -91,6 +98,11 @@ function Landing() {
       </main>
       <Footer />
       <Toaster />
+      <DemoReviewModal
+        open={demoModalOpen}
+        onClose={() => setDemoModalOpen(false)}
+        onProceed={proceedWithDemo}
+      />
     </div>
   );
 }
