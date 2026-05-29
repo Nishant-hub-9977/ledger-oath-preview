@@ -6,6 +6,7 @@ import { AuditDossier } from "@/components/app/AuditDossier";
 import { CelestialBackdrop } from "@/components/app/CelestialBackdrop";
 import { CommandCenter } from "@/components/app/CommandCenter";
 import { DecisionRoom } from "@/components/app/DecisionRoom";
+import { DemoReviewModal } from "@/components/app/DemoReviewModal";
 import { Toaster } from "@/components/ui/sonner";
 import { EMPTY_CASE, type CaseFields, type ReviewState } from "@/lib/decision/types";
 import { toLegacyVerdict, type CanonicalReview } from "@/lib/decision/canonical";
@@ -51,6 +52,7 @@ function Landing() {
   const [fields, setFields] = useState<CaseFields>(EMPTY_CASE);
   const [review, setReview] = useState<ReviewState>({ status: "idle" });
   const [viewDbId, setViewDbId] = useState<string | undefined>(undefined);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -72,11 +74,17 @@ function Landing() {
     }
   }, []);
 
+  const proceedWithDemo = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("lo:runDemo"));
+    }
+  };
+
   return (
     <div id="top" className="celestial-shell min-h-screen bg-background text-foreground grain">
       <Header />
       <main>
-        <Hero />
+        <Hero onRunDemo={() => setDemoModalOpen(true)} />
         <TrustStrip />
         <CommandCenter
           fields={fields}
@@ -90,6 +98,11 @@ function Landing() {
       </main>
       <Footer />
       <Toaster />
+      <DemoReviewModal
+        open={demoModalOpen}
+        onClose={() => setDemoModalOpen(false)}
+        onProceed={proceedWithDemo}
+      />
     </div>
   );
 }
@@ -99,7 +112,7 @@ function Header() {
 }
 
 
-function Hero() {
+function Hero({ onRunDemo }: { onRunDemo: () => void }) {
   return (
     <section id="product" className="relative overflow-hidden">
       <CelestialBackdrop variant="observatory" />
@@ -127,11 +140,7 @@ function Hero() {
           <div className="mt-10 flex flex-wrap items-center gap-5">
             <button
               type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("lo:runDemo"));
-                }
-              }}
+              onClick={onRunDemo}
               className="group inline-flex items-center gap-3 rounded-full bg-ivory px-6 py-3.5 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90"
             >
               Run Demo Review
