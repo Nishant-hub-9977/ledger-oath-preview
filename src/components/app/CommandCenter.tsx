@@ -130,6 +130,9 @@ export function CommandCenter({
               }
             : null,
           useDemoFallback: false,
+          outputLanguage: language,
+          region,
+          currency,
         },
       });
       setReview({ status: "done", verdict: toLegacyVerdict(res.result) });
