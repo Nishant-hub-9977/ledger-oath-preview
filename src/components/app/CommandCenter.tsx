@@ -196,6 +196,50 @@ export function CommandCenter({
         <div className="mt-14 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
           <div className="space-y-8">
             <Panel
+              index="00"
+              title="Jurisdiction & Locale"
+              subtitle="Region preset, settlement currency, dossier language"
+            >
+              <div className="grid gap-4 sm:grid-cols-3">
+                <SelectField
+                  label="Region preset"
+                  value={region}
+                  onChange={(v) => applyRegionPreset(v as RegionCode)}
+                  options={(Object.keys(REGION_PRESETS) as RegionCode[]).map((k) => ({
+                    value: k,
+                    label: REGION_PRESETS[k].label,
+                  }))}
+                />
+                <SelectField
+                  label="Currency"
+                  value={currency}
+                  onChange={(v) => setCurrency(v as CurrencyCode)}
+                  options={CURRENCIES.map((c) => ({
+                    value: c.code,
+                    label: `${c.symbol}  ${c.code}`,
+                  }))}
+                />
+                <SelectField
+                  label="Dossier language"
+                  value={language}
+                  onChange={(v) => setLanguage(v as LanguageCode)}
+                  options={LANGUAGES.map((l) => ({
+                    value: l.code,
+                    label: l.native,
+                  }))}
+                />
+              </div>
+              {fields.invoiceAmount ? (
+                <div className="mt-4 flex items-center gap-2 font-mono text-[11px] text-ivory-muted/80">
+                  <span className="text-ivory-muted/50">Formatted →</span>
+                  <span className="text-amber-glow">
+                    {formatAmount(fields.invoiceAmount, currency)}
+                  </span>
+                </div>
+              ) : null}
+            </Panel>
+
+            <Panel
               index="01"
               title="Active Case File"
               subtitle="Identity of the payment under review"
