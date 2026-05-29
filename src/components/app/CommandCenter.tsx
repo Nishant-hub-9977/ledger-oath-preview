@@ -56,8 +56,6 @@ export function CommandCenter({
     }));
     toast.success(`Loaded ${preset.label} preset`);
   };
-  const caseNameRef = useRef<HTMLInputElement>(null);
-  const analyze = useServerFn(analyzePaymentReview);
 
   const update = <K extends keyof CaseFields>(key: K, value: CaseFields[K]) =>
     setFields((f) => ({ ...f, [key]: value }));
