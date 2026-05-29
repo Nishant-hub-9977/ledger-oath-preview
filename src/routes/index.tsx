@@ -112,7 +112,7 @@ function Header() {
 }
 
 
-function Hero() {
+function Hero({ onRunDemo }: { onRunDemo: () => void }) {
   return (
     <section id="product" className="relative overflow-hidden">
       <CelestialBackdrop variant="observatory" />
@@ -140,11 +140,7 @@ function Hero() {
           <div className="mt-10 flex flex-wrap items-center gap-5">
             <button
               type="button"
-              onClick={() => {
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("lo:runDemo"));
-                }
-              }}
+              onClick={onRunDemo}
               className="group inline-flex items-center gap-3 rounded-full bg-ivory px-6 py-3.5 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90"
             >
               Run Demo Review
