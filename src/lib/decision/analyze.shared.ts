@@ -14,6 +14,15 @@ export const analyzeInputSchema = z.object({
   governancePolicyModel: z.string().max(20000).optional().default(""),
   costCenter: z.string().max(500).optional().default(""),
   routingHeuristics: z.string().max(500).optional().default(""),
+  outputLanguage: z
+    .enum(["en", "es", "fr", "de", "ja", "hi"])
+    .optional()
+    .default("en"),
+  region: z.enum(["IN", "EU", "US", "UK", "APAC"]).optional().default("IN"),
+  currency: z
+    .enum(["INR", "USD", "EUR", "GBP", "JPY", "SGD", "AED"])
+    .optional()
+    .default("INR"),
   uploadedFileMetadata: z
     .object({
       name: z.string().max(500),

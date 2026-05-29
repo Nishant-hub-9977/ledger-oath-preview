@@ -106,7 +106,20 @@ function safetySeal(r: CanonicalReview): CanonicalReview {
 function buildPrompt(input: AnalyzeInput): string {
   const safe = (v: string, max = 500) =>
     sanitizeUntrusted(v).slice(0, max).replace(/[\r\n]+/g, " ");
+  const LANG_NAMES: Record<string, string> = {
+    en: "English",
+    es: "Spanish (Español)",
+    fr: "French (Français)",
+    de: "German (Deutsch)",
+    ja: "Japanese (日本語)",
+    hi: "Hindi (हिन्दी)",
+  };
+  const langLabel = LANG_NAMES[input.outputLanguage] ?? "English";
   return `Review this B2B payment request and emit the strict JSON contract.
+
+LOCALE / OUTPUT LANGUAGE: All human-readable string fields (status, vendor.verificationStatus, riskSignals, policyChecks.evidence/impact, agentTimeline.findings/evidenceSummary/output, approvalRoute.reason, releaseCondition, auditDossier.executiveSummary/rationale/riskSignals/missingDocuments/nextActions) MUST be written in ${langLabel}. Enum values (decision, riskLevel, status of simulatedPaymentInstruction, agent names, PASS/FAIL/WARNING) MUST remain in English. The "warning" field MUST be exactly "No real payment has been executed." in English.
+REGION: ${safe(input.region, 8)} — apply region-appropriate compliance lens (e.g. GST/RBI for IN, VAT/SEPA for EU, W-9/ACH for US, HMRC/BACS for UK, MAS for APAC).
+CURRENCY: ${safe(input.currency, 8)} — invoice.currency and simulatedPaymentInstruction.currency MUST be this ISO code; amountDisplay should be formatted in the local convention for this currency.
 
 CASE NAME: ${safe(input.caseName) || "(unspecified)"}
 REVIEW ID: ${safe(input.reviewId, 120) || "(generate one like LO-YYYY-NNN)"}
@@ -158,7 +171,7 @@ async function callLovableGateway(
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash",
+            model: "google/gemini-3-flash-preview",
             messages: [
               { role: "system", content: SYSTEM_INSTRUCTIONS },
               { role: "user", content: buildPrompt(input) },

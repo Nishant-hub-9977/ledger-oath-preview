@@ -15,6 +15,15 @@ import {
 } from "@/lib/decision/canonical";
 import { analyzePaymentReview } from "@/lib/decision/analyze.functions";
 import { saveReview, uploadInvoiceFile } from "@/lib/decision/persist";
+import {
+  LANGUAGES,
+  CURRENCIES,
+  REGION_PRESETS,
+  formatAmount,
+  type LanguageCode,
+  type RegionCode,
+  type CurrencyCode,
+} from "@/lib/decision/intl";
 import { useAuth } from "@/hooks/use-auth";
 
 export function CommandCenter({
@@ -30,8 +39,23 @@ export function CommandCenter({
 }) {
   const { user } = useAuth();
   const [stagedFile, setStagedFile] = useState<File | null>(null);
+  const [language, setLanguage] = useState<LanguageCode>("en");
+  const [region, setRegion] = useState<RegionCode>("IN");
+  const [currency, setCurrency] = useState<CurrencyCode>("INR");
   const caseNameRef = useRef<HTMLInputElement>(null);
   const analyze = useServerFn(analyzePaymentReview);
+
+  const applyRegionPreset = (next: RegionCode) => {
+    setRegion(next);
+    const preset = REGION_PRESETS[next];
+    setCurrency(preset.currency);
+    setFields((f) => ({
+      ...f,
+      policyModel: preset.policy,
+      routing: preset.routing,
+    }));
+    toast.success(`Loaded ${preset.label} preset`);
+  };
 
   const update = <K extends keyof CaseFields>(key: K, value: CaseFields[K]) =>
     setFields((f) => ({ ...f, [key]: value }));
@@ -106,6 +130,9 @@ export function CommandCenter({
               }
             : null,
           useDemoFallback: false,
+          outputLanguage: language,
+          region,
+          currency,
         },
       });
       setReview({ status: "done", verdict: toLegacyVerdict(res.result) });
@@ -168,6 +195,50 @@ export function CommandCenter({
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
           <div className="space-y-8">
+            <Panel
+              index="00"
+              title="Jurisdiction & Locale"
+              subtitle="Region preset, settlement currency, dossier language"
+            >
+              <div className="grid gap-4 sm:grid-cols-3">
+                <SelectField
+                  label="Region preset"
+                  value={region}
+                  onChange={(v) => applyRegionPreset(v as RegionCode)}
+                  options={(Object.keys(REGION_PRESETS) as RegionCode[]).map((k) => ({
+                    value: k,
+                    label: REGION_PRESETS[k].label,
+                  }))}
+                />
+                <SelectField
+                  label="Currency"
+                  value={currency}
+                  onChange={(v) => setCurrency(v as CurrencyCode)}
+                  options={CURRENCIES.map((c) => ({
+                    value: c.code,
+                    label: `${c.symbol}  ${c.code}`,
+                  }))}
+                />
+                <SelectField
+                  label="Dossier language"
+                  value={language}
+                  onChange={(v) => setLanguage(v as LanguageCode)}
+                  options={LANGUAGES.map((l) => ({
+                    value: l.code,
+                    label: l.native,
+                  }))}
+                />
+              </div>
+              {fields.invoiceAmount ? (
+                <div className="mt-4 flex items-center gap-2 font-mono text-[11px] text-ivory-muted/80">
+                  <span className="text-ivory-muted/50">Formatted →</span>
+                  <span className="text-amber-glow">
+                    {formatAmount(fields.invoiceAmount, currency)}
+                  </span>
+                </div>
+              ) : null}
+            </Panel>
+
             <Panel
               index="01"
               title="Active Case File"
@@ -313,6 +384,37 @@ function TextField({
           mono ? "font-mono text-[13px]" : "",
         ].join(" ")}
       />
+    </label>
+  );
+}
+
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-[10px] uppercase tracking-[0.2em] text-ivory-muted/80">
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-border bg-background/40 px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-emerald-muted/60 focus:bg-background/60"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value} className="bg-nocturne text-foreground">
+            {o.label}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }

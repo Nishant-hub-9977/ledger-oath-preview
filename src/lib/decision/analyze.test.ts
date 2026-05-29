@@ -42,6 +42,9 @@ const baseInput: AnalyzeInput = {
   routingHeuristics: "default",
   uploadedFileMetadata: null,
   useDemoFallback: false,
+  outputLanguage: "en",
+  region: "IN",
+  currency: "INR",
 };
 
 const ORIGINAL_ENV = { ...process.env };
