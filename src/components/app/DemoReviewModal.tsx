@@ -187,6 +187,7 @@ export function DemoReviewModal({
                 onClose();
                 onProceed();
               }}
+              aria-label={`Continue to Command Center to run the full review (sample decision: ${decision}, risk score ${riskScore} of 100)`}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-navy-deep transition-colors hover:bg-ivory/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-muted/50"
             >
               Continue to Command Center
