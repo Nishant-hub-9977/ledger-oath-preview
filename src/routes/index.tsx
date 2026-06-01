@@ -141,10 +141,11 @@ function Hero({ onRunDemo }: { onRunDemo: () => void }) {
             <button
               type="button"
               onClick={onRunDemo}
+              aria-label={`Run simulated demo payment review (sample decision: ${NORTHLINE_CANONICAL.decision}, risk score ${NORTHLINE_CANONICAL.riskScore} of 100)`}
               className="group inline-flex items-center gap-3 rounded-full bg-ivory px-6 py-3.5 text-sm font-medium text-navy-deep transition-all hover:bg-ivory/90"
             >
               Run Demo Review
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
                 <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
